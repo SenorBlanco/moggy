@@ -1,0 +1,118 @@
+<!doctype html>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<html>
+<head>
+<title>Moggy, the Interweb Transmogrifier</title>
+</head>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" version="1.1" color-interpolation-filters="sRGB" id="svgDoc">
+  <defs>
+    <filter id="f1"></filter>
+  </defs>
+</svg>
+<video autoplay loop src="octopus.ogv" style="-webkit-filter: url(#f1); filter: url(#f1);"></video>
+<canvas width="600" height="800" id="schemCanvas"></canvas>
+<script src="schematic.js"></script>
+<script>
+var f1 = document.getElementById("f1");
+var svgDocument = document.getElementById("svgDoc");
+var canvas = document.getElementById("schemCanvas");
+var ctx = canvas.getContext("2d");
+var schematic = new Schematic(canvas.width, canvas.height);
+canvas.onmousemove = function(event) { schematic.onMouseMove(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); };
+canvas.onmousedown = function(event) { schematic.onMouseDown(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
+canvas.onmouseup = function(event) { schematic.onMouseUp(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
+function draw() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    schematic.draw(ctx);
+}
+
+function isBefore(node, reference) {
+    for (node = node.nextSibling; node != null; node = node.nextSibling)
+        if (node == reference) return true;
+    return false;
+}
+
+function onCreateNode(node, shelfNode) {
+    var svgns = "http://www.w3.org/2000/svg";
+    node.svgNode = document.createElementNS(svgns, shelfNode.svgNodeName);
+    node.svgNode.id = node.id;
+    if (shelfNode.initializer) shelfNode.initializer(node.svgNode);
+    f1.insertBefore(node.svgNode, f1.firstChild);
+}
+
+function onLink(output, input) {
+    var resultName = output.node.id;
+    if (!output.node.svgNode) {
+        if (input.node.svgNode)
+            input.node.svgNode.setAttribute(input.id, "SourceGraphic");
+    } else if (!input.node.svgNode) {
+        f1.appendChild(output.node.svgNode);
+    } else {
+        if (!isBefore(output.node.svgNode, input.node.svgNode))
+            f1.insertBefore(output.node.svgNode, input.node.svgNode);
+        output.node.svgNode.setAttribute("result", resultName);
+        input.node.svgNode.setAttribute(input.id, resultName);
+    }
+}
+
+function addShelfNode(id, inputs, initializer, svgNodeName) {
+  var shelfNode = schematic.addShelfNode(id, inputs);
+  shelfNode.initializer = initializer;
+  shelfNode.svgNodeName = svgNodeName ? svgNodeName : "fe" + id;
+}
+
+addShelfNode("Blend", [ "in", "in2" ]);
+addShelfNode("ColorMatrix", [ "in" ]);
+addShelfNode("ComponentTransfer", [ "in" ], function(svgNode) {
+  function initComponent(id) {
+    var svgns = "http://www.w3.org/2000/svg";
+    var func = document.createElementNS(svgns, "feFunc" + id);
+    func.setAttribute("type", "discrete");
+    func.setAttribute("tableValues", [0, 32, 64, 128, 192, 255]);
+    svgNode.appendChild(func);
+  }
+  initComponent("R");
+  initComponent("G");
+  initComponent("B");
+  initComponent("A");
+});
+addShelfNode("Composite", [ "in", "in2" ]);
+addShelfNode("ConvolveMatrix", [ "in"] );
+addShelfNode("DiffuseLighting", [ "in" ]);
+addShelfNode("DisplacementMap", [ "in", "in2" ], function(svgNode) {
+  svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
+  svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
+  svgNode.scale.baseVal = 50;
+});
+addShelfNode("Flood", []);
+addShelfNode("GaussianBlur", [ "in" ], function(svgNode) {
+  svgNode.stdDeviationX.baseVal = 10;
+  svgNode.stdDeviationY.baseVal = 10;
+});
+addShelfNode("Image", []);
+addShelfNode("Merge", []);
+addShelfNode("Morphology", [ "in" ], function(svgNode) {
+    svgNode.radiusX.baseVal = svgNode.radiusY.baseVal = 5;
+});
+addShelfNode("Offset", [ "in" ], function(svgNode) {
+    svgNode.dx.baseVal = svgNode.dy.baseVal = 200; 
+});
+addShelfNode("Opacity", [ "in" ], function(svgNode) {
+    svgNode.type="opacity";
+    svgNode.values.baseVal = [0.5];
+}, "ColorMatrix");
+addShelfNode("SpecularLighting", [ "in" ]);
+addShelfNode("Tile", [ "in" ]);
+addShelfNode("Turbulence", []);
+var sourceGraphic = new Node("SourceGraphic", 150, 0, "#008000", "#00C000", [], ["result"]);
+var output = new Node("Output", 50, 300, "#008000", "#00C000", ["in"], []);
+schematic.addNode(sourceGraphic);
+schematic.addNode(output);
+schematic.link(sourceGraphic.outputs[0], output.inputs[0]);
+schematic.onInvalidate = draw;
+schematic.onCreateNode = onCreateNode;
+schematic.onLink = onLink;
+draw();
+</script>
+</html>
