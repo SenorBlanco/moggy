@@ -14,8 +14,7 @@
 <source src="octopus.ogv"></source>
 </video>
 <canvas width="600" height="800" id="schemCanvas" style="position: absolute; right: 0px;"></canvas>
-<form id="form" style="position: absolute; bottom: 0px;">
-</form>
+<form id="form" style="position: absolute; bottom: 0px;"></form>
 <script src="schematic.js"></script>
 <script>
 var f1 = document.getElementById("f1");
@@ -78,16 +77,67 @@ schematic.onInvalidate = function() {
     requestAnimFrame(draw);
 }
 
-function appendRangeUI(name, min, max, value, step) {
+function createRangeUI(text, min, max, value, step) {
     var input = document.createElement("input");
     input.type = "range";
-    input.name = name;
     input.min = min;
     input.max = max;
     input.value = value;
     input.step = step;
     form.appendChild(input);
+    var label = document.createElement("span");
+    label.innerHTML = text;
+    form.appendChild(label);
     return input;
+}
+
+function createSelectUI(text, options) {
+    var input = document.createElement("select");
+    for (var i = 0; i < options.length; ++i) {
+        var o = document.createElement("option");
+        o.innerHTML = options[i];
+        o.value = options[i];
+        input.appendChild(o);
+    }
+    form.appendChild(input);
+    var label = document.createElement("span");
+    label.innerHTML = text;
+    form.appendChild(label);
+    return input;
+}
+
+function createSimpleSelectUI(text, options, svgNode, attr) {
+    var select = createSelectUI(text, options);
+    select.onchange = function() {
+        svgNode.setAttribute(attr, select.value);
+    }
+}
+
+function createCheckboxUI(text, checked) {
+    var input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = checked;
+    form.appendChild(input);
+    var label = document.createElement("span");
+    label.innerHTML = text;
+    form.appendChild(label);
+    return input;
+}
+
+function createRangePairUI(xtext, ytext, min, max, step, svgX, svgY) {
+    var inputX = createRangeUI(xtext, min, max, svgX.baseVal, step);
+    var inputY = createRangeUI(ytext, min, max, svgY.baseVal, step);
+    var locked = createCheckboxUI("Locked", true);
+    inputX.onchange = function(event) {
+        if (locked.checked) inputY.value = inputX.value;
+        svgX.baseVal = inputX.value;
+        svgY.baseVal = inputY.value;
+    }
+    inputY.onchange = function(event) {
+        if (locked.checked) inputX.value = inputY.value;
+        svgX.baseVal = inputX.value;
+        svgY.baseVal = inputY.value;
+    }
 }
 
 function isBefore(node, reference) {
@@ -136,14 +186,8 @@ s.onCreateNode = function(node) {
   node.svgNode.stdDeviationX.baseVal = 10;
   node.svgNode.stdDeviationY.baseVal = 10;
   node.onSelect = function() {
-      var blurX = appendRangeUI("blurX", 0, 100, node.svgNode.stdDeviationX.baseVal, 1);
-      var blurY = appendRangeUI("blurY", 0, 100, node.svgNode.stdDeviationY.baseVal, 1);
-      blurX.onchange = function(event) {
-          node.svgNode.stdDeviationX.baseVal = blurX.value;
-      }
-      blurY.onchange = function(event) {
-          node.svgNode.stdDeviationY.baseVal = blurY.value;
-      }
+    createRangePairUI("X blur", "Y blur", 0, 100, 1,
+      node.svgNode.stdDeviationX, node.svgNode.stdDeviationY);
   }
 }
 s = addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
@@ -180,6 +224,11 @@ s = addShelfNode("Merge", "feMerge", []);
 s = addShelfNode("Morphology", "feMorphology", [ "in" ]);
 s.onCreateNode = function(node) {
     node.svgNode.radiusX.baseVal = node.svgNode.radiusY.baseVal = 5;
+    node.onSelect = function() {
+        createRangePairUI("X radius", "Y radius", 0, 50, 1,
+            node.svgNode.radiusX, node.svgNode.radiusY);
+        createSimpleSelectUI("operator", ["dilate", "erode"], node.svgNode, "operator");
+    }
 }
 s = addShelfNode("Offset", "feOffset", [ "in" ]);
 s.onCreateNode = function(node) {
@@ -190,7 +239,7 @@ s.onCreateNode = function(node) {
     node.svgNode.type="matrix";
     node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0");
     node.onSelect = function() {
-        var input = appendRangeUI("opacity", 0, 1, node.svgNode.values[18], 0.01);
+        var input = createRangeUI("Opacity", 0, 1, node.svgNode.values[18], 0.01);
         input.onchange = function(value) {
             node.svgNode.setAttribute("values", "1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 " + input.value + " 0");
         }
