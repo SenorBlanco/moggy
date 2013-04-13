@@ -91,9 +91,28 @@ function createRangeUI(text, min, max, value, step) {
     return input;
 }
 
+function createColorPickerUI(text, value) {
+    var input = document.createElement("input");
+    input.type = "color";
+    input.value = value;
+    form.appendChild(input);
+    var label = document.createElement("span");
+    label.innerHTML = text;
+    form.appendChild(label);
+    return input;
+}
+
 function createSimpleRangeUI(text, min, max, step, svgNode, attr) {
     var value = svgNode.getAttribute(attr);
     var input = createRangeUI(text, min, max, value, step);
+    input.onchange = function() {
+        svgNode.setAttribute(attr, input.value);
+    }
+}
+
+function createSimpleColorPickerUI(text, svgNode, attr) {
+    var value = svgNode.getAttribute(attr);
+    var input = createColorPickerUI(text, value);
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
     }
@@ -239,6 +258,7 @@ s.onCreateNode = function(node) {
     node.svgNode.setAttribute("flood-opacity", "0.5");
     node.onSelect = function() {
         createSimpleRangeUI("Opacity", 0, 1, 0.01, node.svgNode, "flood-opacity");
+        createSimpleColorPickerUI("Color", node.svgNode, "flood-color");
     }
 }
 
