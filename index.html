@@ -82,13 +82,21 @@ function createRangeUI(text, min, max, value, step) {
     input.type = "range";
     input.min = min;
     input.max = max;
-    input.value = value;
     input.step = step;
+    input.value = value;
     form.appendChild(input);
     var label = document.createElement("span");
     label.innerHTML = text;
     form.appendChild(label);
     return input;
+}
+
+function createSimpleRangeUI(text, min, max, step, svgNode, attr) {
+    var value = svgNode.getAttribute(attr);
+    var input = createRangeUI(text, min, max, value, step);
+    input.onchange = function() {
+        svgNode.setAttribute(attr, input.value);
+    }
 }
 
 function createSelectUI(text, options) {
@@ -226,11 +234,20 @@ s.onCreateNode = function(node) {
   node.svgNode.scale.baseVal = 50;
 }
 s = addShelfNode("Flood", "feFlood", []);
+s.onCreateNode = function(node) {
+    node.svgNode.setAttribute("flood-color", "red");
+    node.svgNode.setAttribute("flood-opacity", "0.5");
+    node.onSelect = function() {
+        createSimpleRangeUI("Opacity", 0, 1, 0.01, node.svgNode, "flood-opacity");
+    }
+}
+
 s = addShelfNode("Image", "feImage", []);
 s = addShelfNode("Merge", "feMerge", []);
 s = addShelfNode("Morphology", "feMorphology", [ "in" ]);
 s.onCreateNode = function(node) {
     node.svgNode.radiusX.baseVal = node.svgNode.radiusY.baseVal = 5;
+    node.svgNode.setAttribute("operator", "dilate");
     node.onSelect = function() {
         createRangePairUI("X radius", "Y radius", 0, 50, 1,
             node.svgNode.radiusX, node.svgNode.radiusY);
