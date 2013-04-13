@@ -24,16 +24,28 @@ var form = document.getElementById("form");
 var canvas = document.getElementById("schemCanvas");
 var ctx = canvas.getContext("2d");
 var schematic = new Schematic(canvas.width, canvas.height);
-canvas.onmousemove = function(event) { schematic.onMouseMove(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); };
-canvas.onmousedown = function(event) { schematic.onMouseDown(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
-canvas.onmouseup = function(event) { schematic.onMouseUp(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
+canvas.onmousemove = function(event) {
+    event.preventDefault();
+    schematic.onMouseMove(event.pageX - canvas.offsetLeft,
+                          event.pageY - canvas.offsetTop);
+}
+canvas.onmousedown = function(event) {
+    event.preventDefault();
+    schematic.onMouseDown(event.pageX - canvas.offsetLeft,
+                          event.pageY - canvas.offsetTop);
+}
+canvas.onmouseup = function(event) {
+    event.preventDefault();
+    schematic.onMouseUp(event.pageX - canvas.offsetLeft,
+                        event.pageY - canvas.offsetTop);
+}
 var lastTouch;
 canvas.addEventListener('touchmove', function(event) {
   if (event.targetTouches.length == 1) {
     event.preventDefault();
     lastTouch = event.targetTouches[0];
-    schematic.onMouseMove(event.targetTouches[0].pageX - canvas.offsetLeft,
-                          event.targetTouches[0].pageY - canvas.offsetTop);
+    schematic.onMouseMove(lastTouch.pageX - canvas.offsetLeft,
+                          lastTouch.pageY - canvas.offsetTop);
   }
 });
 canvas.addEventListener('touchstart', function(event) {
@@ -167,7 +179,7 @@ s = addShelfNode("Image", "feImage", []);
 s = addShelfNode("Merge", "feMerge", []);
 s = addShelfNode("Morphology", "feMorphology", [ "in" ]);
 s.onCreateNode = function(node) {
-    node.svgNode.radiusX.baseVal = svgNode.radiusY.baseVal = 5;
+    node.svgNode.radiusX.baseVal = node.svgNode.radiusY.baseVal = 5;
 }
 s = addShelfNode("Offset", "feOffset", [ "in" ]);
 s.onCreateNode = function(node) {
