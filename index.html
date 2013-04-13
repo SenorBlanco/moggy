@@ -9,22 +9,40 @@
     <filter id="f1"></filter>
   </defs>
 </svg>
-<video autoplay loop src="octopus.ogv" style="-webkit-filter: url(#f1); filter: url(#f1);"></video>
-<canvas width="600" height="800" id="schemCanvas"></canvas>
+<video autoplay loop style="-webkit-filter: url(#f1); filter: url(#f1); position: absolute;">
+<source src="octopus.mp4"></source>
+<source src="octopus.ogv"></source>
+</video>
+<canvas width="600" height="800" id="schemCanvas" style="position: absolute; right: 0px;"></canvas>
+<form id="form" style="position: absolute; bottom: 0px;">
+</form>
 <script src="schematic.js"></script>
 <script>
 var f1 = document.getElementById("f1");
 var svgDocument = document.getElementById("svgDoc");
+var form = document.getElementById("form");
 var canvas = document.getElementById("schemCanvas");
 var ctx = canvas.getContext("2d");
 var schematic = new Schematic(canvas.width, canvas.height);
 canvas.onmousemove = function(event) { schematic.onMouseMove(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); };
 canvas.onmousedown = function(event) { schematic.onMouseDown(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
 canvas.onmouseup = function(event) { schematic.onMouseUp(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
-function draw() {
+schematic.onInvalidate = function() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     schematic.draw(ctx);
+}
+
+function appendRangeUI(name, min, max, value, step) {
+    var input = document.createElement("input");
+    input.type = "range";
+    input.name = name;
+    input.min = min;
+    input.max = max;
+    input.value = value;
+    input.step = step;
+    form.appendChild(input);
+    return input;
 }
 
 function isBefore(node, reference) {
@@ -33,15 +51,20 @@ function isBefore(node, reference) {
     return false;
 }
 
-function onCreateNode(node, shelfNode) {
+schematic.onCreateNode = function(node, shelfNode) {
     var svgns = "http://www.w3.org/2000/svg";
     node.svgNode = document.createElementNS(svgns, shelfNode.svgNodeName);
     node.svgNode.id = node.id;
-    if (shelfNode.initializer) shelfNode.initializer(node.svgNode);
+    if (shelfNode.onCreateNode) shelfNode.onCreateNode(node);
     f1.insertBefore(node.svgNode, f1.firstChild);
 }
 
-function onLink(output, input) {
+schematic.onSelect = function(node) {
+    while (form.hasChildNodes()) form.removeChild(form.lastChild);
+    if (node && node.onSelect) node.onSelect();
+}
+
+schematic.onLink = function(output, input) {
     var resultName = output.node.id;
     if (!output.node.svgNode) {
         if (input.node.svgNode)
@@ -56,63 +79,86 @@ function onLink(output, input) {
     }
 }
 
-function addShelfNode(id, inputs, initializer, svgNodeName) {
+function addShelfNode(id, svgNodeName, inputs) {
   var shelfNode = schematic.addShelfNode(id, inputs);
-  shelfNode.initializer = initializer;
   shelfNode.svgNodeName = svgNodeName ? svgNodeName : "fe" + id;
+  return shelfNode;
 }
 
-addShelfNode("Blend", [ "in", "in2" ]);
-addShelfNode("ColorMatrix", [ "in" ]);
-addShelfNode("ComponentTransfer", [ "in" ], function(svgNode) {
+var s = addShelfNode("Blend", "feBlend", [ "in", "in2" ]);
+s = addShelfNode("Blur", "feGaussianBlur", [ "in" ]);
+s.onCreateNode = function(node) {
+  node.svgNode.stdDeviationX.baseVal = 10;
+  node.svgNode.stdDeviationY.baseVal = 10;
+  node.onSelect = function() {
+      var blurX = appendRangeUI("blurX", 0, 100, node.svgNode.stdDeviationX.baseVal, 1);
+      var blurY = appendRangeUI("blurY", 0, 100, node.svgNode.stdDeviationY.baseVal, 1);
+      blurX.onchange = function(event) {
+          node.svgNode.stdDeviationX.baseVal = blurX.value;
+      }
+      blurY.onchange = function(event) {
+          node.svgNode.stdDeviationY.baseVal = blurY.value;
+      }
+  }
+}
+s = addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
+s = addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]);
+s.onCreateNode = function(node) {
   function initComponent(id) {
     var svgns = "http://www.w3.org/2000/svg";
     var func = document.createElementNS(svgns, "feFunc" + id);
     func.setAttribute("type", "discrete");
     func.setAttribute("tableValues", [0, 32, 64, 128, 192, 255]);
-    svgNode.appendChild(func);
+    node.svgNode.appendChild(func);
   }
   initComponent("R");
   initComponent("G");
   initComponent("B");
   initComponent("A");
-});
-addShelfNode("Composite", [ "in", "in2" ]);
-addShelfNode("ConvolveMatrix", [ "in"] );
-addShelfNode("DiffuseLighting", [ "in" ]);
-addShelfNode("DisplacementMap", [ "in", "in2" ], function(svgNode) {
-  svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
-  svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
-  svgNode.scale.baseVal = 50;
-});
-addShelfNode("Flood", []);
-addShelfNode("GaussianBlur", [ "in" ], function(svgNode) {
-  svgNode.stdDeviationX.baseVal = 10;
-  svgNode.stdDeviationY.baseVal = 10;
-});
-addShelfNode("Image", []);
-addShelfNode("Merge", []);
-addShelfNode("Morphology", [ "in" ], function(svgNode) {
-    svgNode.radiusX.baseVal = svgNode.radiusY.baseVal = 5;
-});
-addShelfNode("Offset", [ "in" ], function(svgNode) {
-    svgNode.dx.baseVal = svgNode.dy.baseVal = 200; 
-});
-addShelfNode("Opacity", [ "in" ], function(svgNode) {
-    svgNode.type="opacity";
-    svgNode.values.baseVal = [0.5];
-}, "ColorMatrix");
-addShelfNode("SpecularLighting", [ "in" ]);
-addShelfNode("Tile", [ "in" ]);
-addShelfNode("Turbulence", []);
+}
+s = addShelfNode("Composite", "feComposite", [ "in", "in2" ]);
+s.onCreateNode = function(node) {
+  node.onSelect = function() {
+  }
+}
+s = addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] );
+s = addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
+s = addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]);
+s.onCreateNode = function(node) {
+  node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
+  node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
+  node.svgNode.scale.baseVal = 50;
+}
+s = addShelfNode("Flood", "feFlood", []);
+s = addShelfNode("Image", "feImage", []);
+s = addShelfNode("Merge", "feMerge", []);
+s = addShelfNode("Morphology", "feMorphology", [ "in" ]);
+s.onCreateNode = function(node) {
+    node.svgNode.radiusX.baseVal = svgNode.radiusY.baseVal = 5;
+}
+s = addShelfNode("Offset", "feOffset", [ "in" ]);
+s.onCreateNode = function(node) {
+    node.svgNode.dx.baseVal = node.svgNode.dy.baseVal = 200; 
+}
+s = addShelfNode("Opacity", "feColorMatrix", [ "in" ]);
+s.onCreateNode = function(node) {
+    node.svgNode.type="matrix";
+    node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0");
+    node.onSelect = function() {
+        var input = appendRangeUI("opacity", 0, 1, node.svgNode.values[18], 0.01);
+        input.onchange = function(value) {
+            node.svgNode.setAttribute("values", "1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 " + input.value + " 0");
+        }
+    }
+}
+s = addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
+s = addShelfNode("Tile", "feTile", [ "in" ]);
+s = addShelfNode("Turbulence", "feTurbulence", []);
 var sourceGraphic = new Node("SourceGraphic", 150, 0, "#008000", "#00C000", [], ["result"]);
 var output = new Node("Output", 50, 300, "#008000", "#00C000", ["in"], []);
 schematic.addNode(sourceGraphic);
 schematic.addNode(output);
 schematic.link(sourceGraphic.outputs[0], output.inputs[0]);
-schematic.onInvalidate = draw;
-schematic.onCreateNode = onCreateNode;
-schematic.onLink = onLink;
-draw();
+schematic.invalidate();
 </script>
 </html>

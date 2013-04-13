@@ -27,6 +27,7 @@ function HoverManipulator(schematic) {
             this.schematic.currentManipulator = this.currentItem.onBeginDrag(this.schematic);
             this.schematic.currentManipulator.onMouseDown(x, y);
         }
+        this.schematic.select(this.currentItem);
     }
     this.onMouseUp = function(x, y) {
     }
@@ -397,5 +398,11 @@ function Schematic(width, height) {
     }
     this.invalidate = function() {
         if (this.onInvalidate) this.onInvalidate();
+    }
+    selection = null;
+    this.select = function(node) {
+        if (node == selection) return;
+        selection = node;
+        if (this.onSelect) this.onSelect(node);
     }
 }
