@@ -23,6 +23,7 @@ var form = document.getElementById("form");
 var canvas = document.getElementById("schemCanvas");
 var ctx = canvas.getContext("2d");
 var schematic = new Schematic(canvas.width, canvas.height);
+var svgns = "http://www.w3.org/2000/svg";
 canvas.onmousemove = function(event) {
     event.preventDefault();
     schematic.onMouseMove(event.pageX - canvas.offsetLeft,
@@ -175,7 +176,6 @@ function isBefore(node, reference) {
 }
 
 schematic.onCreateNode = function(node, shelfNode) {
-    var svgns = "http://www.w3.org/2000/svg";
     node.svgNode = document.createElementNS(svgns, shelfNode.svgNodeName);
     node.svgNode.id = node.id;
     if (shelfNode.onCreateNode) shelfNode.onCreateNode(node);
@@ -228,7 +228,6 @@ s = addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
 s = addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]);
 s.onCreateNode = function(node) {
   function initComponent(id) {
-    var svgns = "http://www.w3.org/2000/svg";
     var func = document.createElementNS(svgns, "feFunc" + id);
     func.setAttribute("type", "discrete");
     func.setAttribute("tableValues", [0, 32, 64, 128, 192, 255]);
@@ -241,8 +240,10 @@ s.onCreateNode = function(node) {
 }
 s = addShelfNode("Composite", "feComposite", [ "in", "in2" ]);
 s.onCreateNode = function(node) {
-  node.onSelect = function() {
-  }
+    node.svgNode.setAttribute("operator", "over");
+    node.onSelect = function() {
+        createSimpleSelectUI("operator", ["over", "in", "out", "atop", "xor", "arithmetic"], node.svgNode, "operator");
+    }
 }
 s = addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] );
 s = addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
@@ -277,6 +278,10 @@ s.onCreateNode = function(node) {
 s = addShelfNode("Offset", "feOffset", [ "in" ]);
 s.onCreateNode = function(node) {
     node.svgNode.dx.baseVal = node.svgNode.dy.baseVal = 200; 
+    node.onSelect = function() {
+        createRangePairUI("X offset", "Y offset", 0, 1000, 1,
+            node.svgNode.dx, node.svgNode.dy);
+    }
 }
 s = addShelfNode("Opacity", "feColorMatrix", [ "in" ]);
 s.onCreateNode = function(node) {
