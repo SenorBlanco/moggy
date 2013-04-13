@@ -24,12 +24,13 @@ var form = document.getElementById("form");
 var canvas = document.getElementById("schemCanvas");
 var ctx = canvas.getContext("2d");
 var schematic = new Schematic(canvas.width, canvas.height);
-canvas.onmousemove = canvas.ontouchmove = function(event) { schematic.onMouseMove(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); };
-canvas.onmousedown = canvas.ontouchstart = function(event) { schematic.onMouseDown(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
-canvas.onmouseup = canvas.ontouchend = function(event) { schematic.onMouseUp(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
+canvas.onmousemove = function(event) { schematic.onMouseMove(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); };
+canvas.onmousedown = function(event) { schematic.onMouseDown(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
+canvas.onmouseup = function(event) { schematic.onMouseUp(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
 var lastTouch;
 canvas.addEventListener('touchmove', function(event) {
   if (event.targetTouches.length == 1) {
+    event.preventDefault();
     lastTouch = event.targetTouches[0];
     schematic.onMouseMove(event.targetTouches[0].pageX - canvas.offsetLeft,
                           event.targetTouches[0].pageY - canvas.offsetTop);
@@ -37,12 +38,14 @@ canvas.addEventListener('touchmove', function(event) {
 });
 canvas.addEventListener('touchstart', function(event) {
   if (event.targetTouches.length == 1) {
+    event.preventDefault();
     lastTouch = event.targetTouches[0];
     schematic.onMouseDown(lastTouch.pageX - canvas.offsetLeft,
                           lastTouch.pageY - canvas.offsetTop);
   }
 });
 canvas.addEventListener('touchend', function(event) {
+  event.preventDefault();
   schematic.onMouseUp(lastTouch.pageX - canvas.offsetLeft,
                       lastTouch.pageY - canvas.offsetTop);
 });
