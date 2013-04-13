@@ -49,10 +49,21 @@ canvas.addEventListener('touchend', function(event) {
   schematic.onMouseUp(lastTouch.pageX - canvas.offsetLeft,
                       lastTouch.pageY - canvas.offsetTop);
 });
-schematic.onInvalidate = function() {
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+function draw() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     schematic.draw(ctx);
+}
+schematic.onInvalidate = function() {
+    requestAnimFrame(draw);
 }
 
 function appendRangeUI(name, min, max, value, step) {
