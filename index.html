@@ -27,6 +27,25 @@ var schematic = new Schematic(canvas.width, canvas.height);
 canvas.onmousemove = canvas.ontouchmove = function(event) { schematic.onMouseMove(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); };
 canvas.onmousedown = canvas.ontouchstart = function(event) { schematic.onMouseDown(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
 canvas.onmouseup = canvas.ontouchend = function(event) { schematic.onMouseUp(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop); }
+var lastTouch;
+canvas.addEventListener('touchmove', function(event) {
+  if (event.targetTouches.length == 1) {
+    lastTouch = event.targetTouches[0];
+    schematic.onMouseMove(event.targetTouches[0].pageX - canvas.offsetLeft,
+                          event.targetTouches[0].pageY - canvas.offsetTop);
+  }
+});
+canvas.addEventListener('touchstart', function(event) {
+  if (event.targetTouches.length == 1) {
+    lastTouch = event.targetTouches[0];
+    schematic.onMouseDown(lastTouch.pageX - canvas.offsetLeft,
+                          lastTouch.pageY - canvas.offsetTop);
+  }
+});
+canvas.addEventListener('touchend', function(event) {
+  schematic.onMouseUp(lastTouch.pageX - canvas.offsetLeft,
+                      lastTouch.pageY - canvas.offsetTop);
+});
 schematic.onInvalidate = function() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);

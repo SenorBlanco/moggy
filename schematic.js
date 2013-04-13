@@ -23,6 +23,7 @@ function HoverManipulator(schematic) {
         this.schematic.invalidate();
     }
     this.onMouseDown = function(x, y) {
+        this.onMouseMove(x, y);
         if (this.currentItem) {
             this.schematic.currentManipulator = this.currentItem.onBeginDrag(this.schematic);
             this.schematic.currentManipulator.onMouseDown(x, y);
