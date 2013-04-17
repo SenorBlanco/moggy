@@ -207,15 +207,13 @@ function addShelfNode(id, svgNodeName, inputs) {
   return shelfNode;
 }
 
-var s = addShelfNode("Blend", "feBlend", [ "in", "in2" ]);
-s.onCreateNode = function(node) {
+addShelfNode("Blend", "feBlend", [ "in", "in2" ]).onCreateNode = function(node) {
     node.svgNode.setAttribute("mode", "normal");
     node.onSelect = function() {
         createSimpleSelectUI("mode", ["normal", "multiply", "screen", "darken", "lighten"], node.svgNode, "mode");
     };
 };
-s = addShelfNode("Blur", "feGaussianBlur", [ "in" ]);
-s.onCreateNode = function(node) {
+addShelfNode("Blur", "feGaussianBlur", [ "in" ]).onCreateNode = function(node) {
   node.svgNode.stdDeviationX.baseVal = 10;
   node.svgNode.stdDeviationY.baseVal = 10;
   node.onSelect = function() {
@@ -223,9 +221,8 @@ s.onCreateNode = function(node) {
       node.svgNode.stdDeviationX, node.svgNode.stdDeviationY);
   };
 };
-s = addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
-s = addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]);
-s.onCreateNode = function(node) {
+addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
+addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]).onCreateNode = function(node) {
   function initComponent(id) {
     var func = document.createElementNS(svgns, "feFunc" + id);
     func.setAttribute("type", "discrete");
@@ -237,23 +234,20 @@ s.onCreateNode = function(node) {
   initComponent("B");
   initComponent("A");
 };
-s = addShelfNode("Composite", "feComposite", [ "in", "in2" ]);
-s.onCreateNode = function(node) {
+addShelfNode("Composite", "feComposite", [ "in", "in2" ]).onCreateNode = function(node) {
     node.svgNode.setAttribute("operator", "over");
     node.onSelect = function() {
         createSimpleSelectUI("operator", ["over", "in", "out", "atop", "xor", "arithmetic"], node.svgNode, "operator");
     };
 };
-s = addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] );
-s = addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
-s = addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]);
-s.onCreateNode = function(node) {
+addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] );
+addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
+addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]).onCreateNode = function(node) {
   node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
   node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
   node.svgNode.scale.baseVal = 50;
 };
-s = addShelfNode("Flood", "feFlood", []);
-s.onCreateNode = function(node) {
+addShelfNode("Flood", "feFlood", []).onCreateNode = function(node) {
     node.svgNode.setAttribute("flood-color", "#FF0000");
     node.svgNode.setAttribute("flood-opacity", "0.5");
     node.onSelect = function() {
@@ -261,11 +255,9 @@ s.onCreateNode = function(node) {
         createSimpleColorPickerUI("Color", node.svgNode, "flood-color");
     };
 };
-
-s = addShelfNode("Image", "feImage", []);
-s = addShelfNode("Merge", "feMerge", []);
-s = addShelfNode("Morphology", "feMorphology", [ "in" ]);
-s.onCreateNode = function(node) {
+addShelfNode("Image", "feImage", []);
+addShelfNode("Merge", "feMerge", []);
+addShelfNode("Morphology", "feMorphology", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.radiusX.baseVal = node.svgNode.radiusY.baseVal = 5;
     node.svgNode.setAttribute("operator", "dilate");
     node.onSelect = function() {
@@ -274,16 +266,14 @@ s.onCreateNode = function(node) {
         createSimpleSelectUI("operator", ["dilate", "erode"], node.svgNode, "operator");
     };
 };
-s = addShelfNode("Offset", "feOffset", [ "in" ]);
-s.onCreateNode = function(node) {
+addShelfNode("Offset", "feOffset", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.dx.baseVal = node.svgNode.dy.baseVal = 200; 
     node.onSelect = function() {
         createRangePairUI("X offset", "Y offset", 0, 1000, 1,
             node.svgNode.dx, node.svgNode.dy);
     };
 };
-s = addShelfNode("Opacity", "feColorMatrix", [ "in" ]);
-s.onCreateNode = function(node) {
+addShelfNode("Opacity", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.type="matrix";
     node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0");
     node.onSelect = function() {
@@ -294,9 +284,9 @@ s.onCreateNode = function(node) {
         };
     };
 };
-s = addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
-s = addShelfNode("Tile", "feTile", [ "in" ]);
-s = addShelfNode("Turbulence", "feTurbulence", []);
+addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
+addShelfNode("Tile", "feTile", [ "in" ]);
+addShelfNode("Turbulence", "feTurbulence", []);
 var sourceGraphic = new Node("SourceGraphic", 150, 0, "#008000", "#00C000", [], ["result"]);
 var output = new Node("Output", 50, 300, "#008000", "#00C000", ["in"], []);
 schematic.addNode(sourceGraphic);
