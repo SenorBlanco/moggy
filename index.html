@@ -195,8 +195,8 @@ schematic.onLink = function(output, input) {
     } else if (!input.node.svgNode) {
         f1.appendChild(output.node.svgNode);
     } else {
-        if (!isBefore(output.node.svgNode, input.node.svgNode))
-            f1.insertBefore(output.node.svgNode, input.node.svgNode);
+        if (isBefore(input.node.svgNode, output.node.svgNode))
+            f1.insertBefore(input.node.svgNode, output.node.svgNode.nextSibling);
         output.node.svgNode.setAttribute("result", resultName);
         input.node.svgNode.setAttribute(input.id, resultName);
     }
