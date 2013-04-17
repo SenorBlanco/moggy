@@ -68,13 +68,12 @@ window.requestAnimFrame = (function(){
             window.setTimeout(callback, 1000 / 60);
           };
 })();
-function draw() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    schematic.draw(ctx);
-}
 schematic.onInvalidate = function() {
-    requestAnimFrame(draw);
+    requestAnimFrame(function() {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        schematic.draw(ctx);
+    });
 };
 
 function createRangeUI(text, min, max, value, step) {
