@@ -4,6 +4,7 @@
 <head>
 <title>Moggy, the Interweb Transmogrifier</title>
 </head>
+<body>
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" version="1.1" color-interpolation-filters="sRGB" id="svgDoc">
   <defs>
     <filter id="f1"></filter>
@@ -24,19 +25,19 @@ var ctx = canvas.getContext("2d");
 var schematic = new Schematic(canvas.width, canvas.height);
 var svgns = "http://www.w3.org/2000/svg";
 canvas.onmousemove = function(event) {
-    event.preventDefault();
     schematic.onMouseMove(event.pageX - canvas.offsetLeft,
                           event.pageY - canvas.offsetTop);
+    return false;
 };
 canvas.onmousedown = function(event) {
-    event.preventDefault();
     schematic.onMouseDown(event.pageX - canvas.offsetLeft,
                           event.pageY - canvas.offsetTop);
+    return false;
 };
 canvas.onmouseup = function(event) {
-    event.preventDefault();
     schematic.onMouseUp(event.pageX - canvas.offsetLeft,
                         event.pageY - canvas.offsetTop);
+    return false;
 };
 var lastTouch;
 canvas.addEventListener('touchmove', function(event) {
@@ -303,4 +304,5 @@ schematic.addNode(output);
 schematic.link(sourceGraphic.outputs[0], output.inputs[0]);
 schematic.invalidate();
 </script>
+</body>
 </html>
