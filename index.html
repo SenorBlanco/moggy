@@ -18,7 +18,6 @@
 <script src="schematic.js"></script>
 <script>
 var f1 = document.getElementById("f1");
-var svgDocument = document.getElementById("svgDoc");
 var form = document.getElementById("form");
 var canvas = document.getElementById("schemCanvas");
 var ctx = canvas.getContext("2d");
@@ -28,17 +27,17 @@ canvas.onmousemove = function(event) {
     event.preventDefault();
     schematic.onMouseMove(event.pageX - canvas.offsetLeft,
                           event.pageY - canvas.offsetTop);
-}
+};
 canvas.onmousedown = function(event) {
     event.preventDefault();
     schematic.onMouseDown(event.pageX - canvas.offsetLeft,
                           event.pageY - canvas.offsetTop);
-}
+};
 canvas.onmouseup = function(event) {
     event.preventDefault();
     schematic.onMouseUp(event.pageX - canvas.offsetLeft,
                         event.pageY - canvas.offsetTop);
-}
+};
 var lastTouch;
 canvas.addEventListener('touchmove', function(event) {
   if (event.targetTouches.length == 1) {
@@ -76,7 +75,7 @@ function draw() {
 }
 schematic.onInvalidate = function() {
     requestAnimFrame(draw);
-}
+};
 
 function createRangeUI(text, min, max, value, step) {
     var input = document.createElement("input");
@@ -108,7 +107,7 @@ function createSimpleRangeUI(text, min, max, step, svgNode, attr) {
     var input = createRangeUI(text, min, max, value, step);
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
-    }
+    };
 }
 
 function createSimpleColorPickerUI(text, svgNode, attr) {
@@ -116,7 +115,7 @@ function createSimpleColorPickerUI(text, svgNode, attr) {
     var input = createColorPickerUI(text, value);
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
-    }
+    };
 }
 
 function createSelectUI(text, options) {
@@ -139,7 +138,7 @@ function createSimpleSelectUI(text, options, svgNode, attr) {
     select.value = svgNode.getAttribute(attr);
     select.onchange = function() {
         svgNode.setAttribute(attr, select.value);
-    }
+    };
 }
 
 function createCheckboxUI(text, checked) {
@@ -161,16 +160,16 @@ function createRangePairUI(xtext, ytext, min, max, step, svgX, svgY) {
         if (locked.checked) inputY.value = inputX.value;
         svgX.baseVal = inputX.value;
         svgY.baseVal = inputY.value;
-    }
+    };
     inputY.onchange = function(event) {
         if (locked.checked) inputX.value = inputY.value;
         svgX.baseVal = inputX.value;
         svgY.baseVal = inputY.value;
-    }
+    };
 }
 
 function isBefore(node, reference) {
-    for (node = node.nextSibling; node != null; node = node.nextSibling)
+    for (node = node.nextSibling; node !== null; node = node.nextSibling)
         if (node == reference) return true;
     return false;
 }
@@ -180,12 +179,12 @@ schematic.onCreateNode = function(node, shelfNode) {
     node.svgNode.id = node.id;
     if (shelfNode.onCreateNode) shelfNode.onCreateNode(node);
     f1.insertBefore(node.svgNode, f1.firstChild);
-}
+};
 
 schematic.onSelect = function(node) {
     while (form.hasChildNodes()) form.removeChild(form.lastChild);
     if (node && node.onSelect) node.onSelect();
-}
+};
 
 schematic.onLink = function(output, input) {
     var resultName = output.node.id;
@@ -200,7 +199,7 @@ schematic.onLink = function(output, input) {
         output.node.svgNode.setAttribute("result", resultName);
         input.node.svgNode.setAttribute(input.id, resultName);
     }
-}
+};
 
 function addShelfNode(id, svgNodeName, inputs) {
   var shelfNode = schematic.addShelfNode(id, inputs);
@@ -213,8 +212,8 @@ s.onCreateNode = function(node) {
     node.svgNode.setAttribute("mode", "normal");
     node.onSelect = function() {
         createSimpleSelectUI("mode", ["normal", "multiply", "screen", "darken", "lighten"], node.svgNode, "mode");
-    }
-}
+    };
+};
 s = addShelfNode("Blur", "feGaussianBlur", [ "in" ]);
 s.onCreateNode = function(node) {
   node.svgNode.stdDeviationX.baseVal = 10;
@@ -222,8 +221,8 @@ s.onCreateNode = function(node) {
   node.onSelect = function() {
     createRangePairUI("X blur", "Y blur", 0, 100, 1,
       node.svgNode.stdDeviationX, node.svgNode.stdDeviationY);
-  }
-}
+  };
+};
 s = addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
 s = addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]);
 s.onCreateNode = function(node) {
@@ -237,14 +236,14 @@ s.onCreateNode = function(node) {
   initComponent("G");
   initComponent("B");
   initComponent("A");
-}
+};
 s = addShelfNode("Composite", "feComposite", [ "in", "in2" ]);
 s.onCreateNode = function(node) {
     node.svgNode.setAttribute("operator", "over");
     node.onSelect = function() {
         createSimpleSelectUI("operator", ["over", "in", "out", "atop", "xor", "arithmetic"], node.svgNode, "operator");
-    }
-}
+    };
+};
 s = addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] );
 s = addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
 s = addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]);
@@ -252,7 +251,7 @@ s.onCreateNode = function(node) {
   node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
   node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
   node.svgNode.scale.baseVal = 50;
-}
+};
 s = addShelfNode("Flood", "feFlood", []);
 s.onCreateNode = function(node) {
     node.svgNode.setAttribute("flood-color", "#FF0000");
@@ -260,8 +259,8 @@ s.onCreateNode = function(node) {
     node.onSelect = function() {
         createSimpleRangeUI("Opacity", 0, 1, 0.01, node.svgNode, "flood-opacity");
         createSimpleColorPickerUI("Color", node.svgNode, "flood-color");
-    }
-}
+    };
+};
 
 s = addShelfNode("Image", "feImage", []);
 s = addShelfNode("Merge", "feMerge", []);
@@ -273,16 +272,16 @@ s.onCreateNode = function(node) {
         createRangePairUI("X radius", "Y radius", 0, 50, 1,
             node.svgNode.radiusX, node.svgNode.radiusY);
         createSimpleSelectUI("operator", ["dilate", "erode"], node.svgNode, "operator");
-    }
-}
+    };
+};
 s = addShelfNode("Offset", "feOffset", [ "in" ]);
 s.onCreateNode = function(node) {
     node.svgNode.dx.baseVal = node.svgNode.dy.baseVal = 200; 
     node.onSelect = function() {
         createRangePairUI("X offset", "Y offset", 0, 1000, 1,
             node.svgNode.dx, node.svgNode.dy);
-    }
-}
+    };
+};
 s = addShelfNode("Opacity", "feColorMatrix", [ "in" ]);
 s.onCreateNode = function(node) {
     node.svgNode.type="matrix";
@@ -292,9 +291,9 @@ s.onCreateNode = function(node) {
         var input = createRangeUI("Opacity", 0, 1, value, 0.01);
         input.onchange = function(value) {
             node.svgNode.setAttribute("values", "1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 " + input.value + " 0");
-        }
-    }
-}
+        };
+    };
+};
 s = addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
 s = addShelfNode("Tile", "feTile", [ "in" ]);
 s = addShelfNode("Turbulence", "feTurbulence", []);
