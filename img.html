@@ -221,6 +221,14 @@ s.onCreateNode = function(node) {
   };
 };
 s = addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
+s.onCreateNode = function(node) {
+    node.svgNode.setAttribute("type", "saturate");
+    node.svgNode.setAttribute("values", "0.5");
+    node.onSelect = function() {
+        createSimpleSelectUI("type", ["matrix", "saturate", "hueRotate", "luminanceToAlpha"], node.svgNode, "type");
+        createSimpleRangeUI("values", 0, 5, 0.01, node.svgNode, "values");
+    }
+}
 s = addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]);
 s.onCreateNode = function(node) {
   function initComponent(id) {
