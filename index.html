@@ -221,7 +221,14 @@ addShelfNode("Blur", "feGaussianBlur", [ "in" ]).onCreateNode = function(node) {
       node.svgNode.stdDeviationX, node.svgNode.stdDeviationY);
   };
 };
-addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]);
+addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
+    node.svgNode.setAttribute("type", "saturate");
+    node.svgNode.setAttribute("values", "0.5");
+    node.onSelect = function() {
+        createSimpleSelectUI("type", ["matrix", "saturate", "hueRotate", "luminanceToAlpha"], node.svgNode, "type");
+        createSimpleRangeUI("values", 0, 5, 0.01, node.svgNode, "values");
+    }
+}
 addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]).onCreateNode = function(node) {
   function initComponent(id) {
     var func = document.createElementNS(svgns, "feFunc" + id);
