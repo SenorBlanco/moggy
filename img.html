@@ -244,7 +244,26 @@ addShelfNode("Composite", "feComposite", [ "in", "in2" ]).onCreateNode = functio
         createSimpleSelectUI("operator", ["over", "in", "out", "atop", "xor", "arithmetic"], node.svgNode, "operator");
     };
 };
-addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] );
+addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] ).onCreateNode = function(node) {
+    node.svgNode.orderX.baseVal = node.svgNode.orderY.baseVal = 3;
+    node.svgNode.setAttribute("kernelMatrix", "1 -1 1  -1 -0.01 -1  1 -1 1");
+    node.svgNode.preset = "edge_outline";
+    node.onSelect = function() {
+        var presets = {
+                        edge_outline: "1 -1  1  -1 -0.01 -1  1 -1 1",
+                        sharpen:      "0 -1  0  -1  5 -1  0 -1  0",
+                        edge_detect:  "0  1  0   1 -4  1  0  1  0",
+                        edge_enhance: "0  0  0  -1  1  0  0  0  0",
+                        emboss:       "-2 -1  0  -1  1  1  0  1  2",
+                      };
+        var ui = createSelectUI("preset", ["edge_outline", "sharpen", "edge_detect", "edge_enhance", "emboss"], node.svgNode, "operator");
+        ui.value = node.svgNode.preset;
+        ui.onchange = function() {
+            node.svgNode.setAttribute("kernelMatrix", presets[ui.value]);
+            node.svgNode.preset = ui.value;
+        };
+    };
+}
 addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
 addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]).onCreateNode = function(node) {
   node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
