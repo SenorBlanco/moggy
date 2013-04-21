@@ -11,7 +11,6 @@
   </defs>
 </svg>
 <img src="IMG_0854_SMALL.JPG" style="-webkit-filter: url(#f1); filter: url(#f1); position: absolute; -webkit-transform: translateZ(0);"></img>
-64,69c61,68
 <canvas width="600" height="800" id="schemCanvas" style="position: absolute; right: 0px;"></canvas>
 <form id="form" style="position: absolute; bottom: 0px;"></form>
 <script src="schematic.js" type="text/javascript"></script>
@@ -271,13 +270,15 @@ addShelfNode("Convolve", "feConvolveMatrix", [ "in" ] ).onCreateNode = function(
     node.svgNode.preset = "edge_outline";
     node.onFocus = function() {
         var presets = {
-                        edge_outline: "1 -1  1  -1 -0.01 -1  1 -1 1",
-                        sharpen:      "0 -1  0  -1  5 -1  0 -1  0",
-                        edge_detect:  "0  1  0   1 -4  1  0  1  0",
-                        edge_enhance: "0  0  0  -1  1  0  0  0  0",
-                        emboss:       "-2 -1  0  -1  1  1  0  1  2",
+                        edge_outline:    "1 -1  1  -1 -0.01 -1  1 -1  1",
+                        sharpen:         "0 -1  0  -1  5    -1  0 -1  0",
+                        edge_detect:     "0  1  0   1 -3.99  1  0  1  0",
+                        horiz_edges:     "0  0  0  -1  0.99  0  0  0  0",
+                        vert_edges:      "0 -1  0   0  0.99  0  0  0  0",
+                        emboss:         "-2 -1  0  -1  1     1  0  1  2",
+                        xray:            "0 -1  0  -1  1.98  0  0  0  0",
                       };
-        var ui = createSelectUI("preset", ["edge_outline", "sharpen", "edge_detect", "edge_enhance", "emboss"], node.svgNode, "operator");
+        var ui = createSelectUI("preset", ["edge_outline", "sharpen", "edge_detect", "horiz_edges", "vert_edges",  "emboss", "xray"], node.svgNode, "operator");
         ui.value = node.svgNode.preset;
         ui.onchange = function() {
             node.svgNode.setAttribute("kernelMatrix", presets[ui.value]);
@@ -287,9 +288,14 @@ addShelfNode("Convolve", "feConvolveMatrix", [ "in" ] ).onCreateNode = function(
 }
 addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
 addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]).onCreateNode = function(node) {
-  node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
-  node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
-  node.svgNode.scale.baseVal = 50;
+    node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
+    node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
+    node.svgNode.scale.baseVal = 50;
+    node.onFocus = function() {
+        createSimpleRangeUI("scale", 0, 200, 0.01, node.svgNode, "scale");
+        createSimpleSelectUI("X Channel", ["R", "G", "B", "A"], node.svgNode, "xChannelSelector");
+        createSimpleSelectUI("Y Channel", ["R", "G", "B", "A"], node.svgNode, "yChannelSelector");
+    };
 };
 addShelfNode("Flood", "feFlood", []).onCreateNode = function(node) {
     node.svgNode.setAttribute("flood-color", "#FF0000");
