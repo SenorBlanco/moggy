@@ -223,21 +223,17 @@ addShelfNode("Blur", "feGaussianBlur", [ "in" ]).onCreateNode = function(node) {
   };
 };
 addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
-    node.svgNode.setAttribute("type", "saturate");
-    node.svgNode.setAttribute("values", "5");
+    node.svgNode.setAttribute("type", "matrix");
+    node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0");
     node.onSelect = function() {
-        var select = createSelectUI("", ["matrix", "saturate", "hueRotate", "luminanceToAlpha"]);
-        select.value = node.svgNode.getAttribute("type");
-        var max = select.value == "saturate" ? 20 : 360;
-        var range = createSimpleRangeUI("", 0, max, 0.01, node.svgNode, "values");
         var matrix = document.createElement("div");
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 5; j++) {
                 var entry = document.createElement("input");
                 entry.type = "text";
                 entry.size = 4;
-                entry.value = i == j ? "1" : "0";
                 entry.index = i * 5 + j;
+                entry.value = node.svgNode.values.baseVal.getItem(entry.index).value;
                 entry.onchange = function() {
                     var number = node.svgNode.values.baseVal.getItem(this.index);
                     number.value = parseFloat(this.value);
@@ -246,27 +242,7 @@ addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]).onCreateNode = function(n
             }
             matrix.appendChild(document.createElement("br"));
         }
-        select.onchange = function() {
-            node.svgNode.setAttribute("type", select.value);
-            if (select.value == "matrix") {
-                if (range.parentNode == form) form.removeChild(range);
-                // FIXME:  get these from form
-                node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0");
-                form.appendChild(matrix);
-            } else if (select.value == "saturate") {
-                range.max = 20;
-                form.appendChild(range);
-                if (matrix.parentNode == form) form.removeChild(matrix);
-            } else if (select.value == "hueRotate") {
-                range.max = 360;
-                form.appendChild(range);
-                if (matrix.parentNode == form) form.removeChild(matrix);
-            } else if (select.value == "luminanceToAlpha") {
-                form.removeChild(range);
-                if (matrix.parentNode == form) form.removeChild(matrix);
-            }
-            range.value = Math.max(range.value, range.max);
-        };
+        form.appendChild(matrix);
     }
 }
 addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]).onCreateNode = function(node) {
@@ -287,7 +263,7 @@ addShelfNode("Composite", "feComposite", [ "in", "in2" ]).onCreateNode = functio
         createSimpleSelectUI("operator", ["over", "in", "out", "atop", "xor", "arithmetic"], node.svgNode, "operator");
     };
 };
-addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] ).onCreateNode = function(node) {
+addShelfNode("Convolve", "feConvolveMatrix", [ "in" ] ).onCreateNode = function(node) {
     node.svgNode.orderX.baseVal = node.svgNode.orderY.baseVal = 3;
     node.svgNode.setAttribute("kernelMatrix", "1 -1 1  -1 -0.01 -1  1 -1 1");
     node.svgNode.preset = "edge_outline";
@@ -321,6 +297,13 @@ addShelfNode("Flood", "feFlood", []).onCreateNode = function(node) {
         createSimpleColorPickerUI("Color", node.svgNode, "flood-color");
     };
 };
+addShelfNode("HueRotate", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
+    node.svgNode.setAttribute("type", "hueRotate");
+    node.svgNode.setAttribute("values", "180");
+    node.onSelect = function() {
+        createSimpleRangeUI("rotation", 0, 360, 0.1, node.svgNode, "values");
+    }
+}
 addShelfNode("Image", "feImage", []);
 addShelfNode("Merge", "feMerge", []);
 addShelfNode("Morphology", "feMorphology", [ "in" ]).onCreateNode = function(node) {
@@ -348,6 +331,13 @@ addShelfNode("Opacity", "feColorMatrix", [ "in" ]).onCreateNode = function(node)
         input.onchange = function(value) {
             node.svgNode.setAttribute("values", "1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 " + input.value + " 0");
         };
+    };
+};
+addShelfNode("Saturate", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
+    node.svgNode.setAttribute("type", "saturate");
+    node.svgNode.setAttribute("values", "5");
+    node.onSelect = function() {
+        createSimpleRangeUI("saturation", 0, 20, 0.01, node.svgNode, "values");
     };
 };
 addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
