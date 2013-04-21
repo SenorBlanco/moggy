@@ -1,15 +1,16 @@
-NODE_WIDTH = 140;
-NODE_HEIGHT = 35;
-NODE_COLOR = '#808080';
-NODE_HIGHLIGHT_COLOR = '#C0C0C0';
-NEW_NODE_COLOR = 'rgba(128, 128, 128, 0.5)';
-NODE_HIGHLIGHT_COLOR = '#C0C0C0';
-SHELF_NODE_SPACING = 5;
-CONNECTOR_HEIGHT = 8;
-CONNECTOR_SPACING = 2;
-CONNECTOR_COLOR = '#808000';
-CONNECTOR_HIGHLIGHT_COLOR = '#FFFF00';
-MIN_BEZIER_OFFSET = 50;
+var NODE_WIDTH = 140;
+var NODE_HEIGHT = 35;
+var NODE_COLOR = '#808080';
+var NODE_HIGHLIGHT_COLOR = '#C0C0C0';
+var NEW_NODE_COLOR = 'rgba(128, 128, 128, 0.5)';
+var NODE_HIGHLIGHT_COLOR = '#C0C0C0';
+var SHELF_NODE_SPACING = 5;
+var CONNECTOR_HEIGHT = 8;
+var CONNECTOR_SPACING = 2;
+var CONNECTOR_COLOR = '#808000';
+var CONNECTOR_HIGHLIGHT_COLOR = '#FFFF00';
+var MIN_BEZIER_OFFSET = 30;
+var BEZIER_SCALE = 0.7;
 
 function HoverManipulator(schematic) {
     this.schematic = schematic;
@@ -28,7 +29,7 @@ function HoverManipulator(schematic) {
             this.schematic.currentManipulator = this.currentItem.onBeginDrag(this.schematic);
             this.schematic.currentManipulator.onMouseDown(x, y);
         }
-        this.schematic.select(this.currentItem);
+        this.schematic.focus(this.currentItem);
     }
     this.onMouseUp = function(x, y) {
     }
@@ -89,6 +90,7 @@ function CreateAndDragManipulator(schematic, shelfNode) {
             var dropInput = this.target ? this.target.getDropInput() : null;
             if (dropInput) {
                 if (schematic.onCreateNode) schematic.onCreateNode(this.node, this.shelfNode);
+                this.schematic.focus(this.node);
                 if (dropInput.source && this.node.inputs.length > 0) {
                     this.schematic.link(dropInput.source, this.node.inputs[0]);
                 }
@@ -139,7 +141,7 @@ function LinkManipulator(schematic, source) {
         ctx.strokeStyle = CONNECTOR_HIGHLIGHT_COLOR;
         ctx.beginPath();
         ctx.moveTo(this.startX, this.startY);
-        var offset = Math.abs(this.endY - this.startY);
+        var offset = Math.abs(this.endY - this.startY) * BEZIER_SCALE;
         if (offset < MIN_BEZIER_OFFSET) offset = MIN_BEZIER_OFFSET;
         if (!this.source.isOutput) {
             offset = -offset;
@@ -287,7 +289,7 @@ function Link(source, destination) {
         var endX = this.destination.node.x + this.destination.x + this.destination.width / 2;
         var endY = this.destination.node.y + this.destination.y + this.destination.height / 2;
         ctx.moveTo(startX, startY);
-        var offset = Math.abs(endY - startY);
+        var offset = Math.abs(endY - startY) * BEZIER_SCALE;
         if (offset < MIN_BEZIER_OFFSET) offset = MIN_BEZIER_OFFSET;
         ctx.bezierCurveTo(startX, startY + offset, endX, endY - offset, endX, endY);
     }
@@ -400,10 +402,10 @@ function Schematic(width, height) {
     this.invalidate = function() {
         if (this.onInvalidate) this.onInvalidate();
     }
-    selection = null;
-    this.select = function(node) {
-        if (node == selection) return;
-        selection = node;
-        if (this.onSelect) this.onSelect(node);
+    focus = null;
+    this.focus = function(node) {
+        if (node == focus) return;
+        focus = node;
+        if (this.onFocus) this.onFocus(node);
     }
 }
