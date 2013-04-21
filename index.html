@@ -61,14 +61,12 @@ canvas.addEventListener('touchend', function(event) {
   schematic.onMouseUp(lastTouch.pageX - canvas.offsetLeft,
                       lastTouch.pageY - canvas.offsetTop);
 });
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-          };
-})();
+window.requestAnimFrame = window.requestAnimationFrame       ||
+                          window.webkitRequestAnimationFrame ||
+                          window.mozRequestAnimationFrame    ||
+                          function (callback) {
+                              window.setTimeout(callback, 1000 / 60);
+                          };
 schematic.onInvalidate = function() {
     requestAnimFrame(function() {
         ctx.fillStyle = "black";
@@ -108,6 +106,7 @@ function createSimpleRangeUI(text, min, max, step, svgNode, attr) {
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
     };
+    return input;
 }
 
 function createSimpleColorPickerUI(text, svgNode, attr) {
@@ -116,6 +115,7 @@ function createSimpleColorPickerUI(text, svgNode, attr) {
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
     };
+    return input;
 }
 
 function createSelectUI(text, options) {
@@ -139,6 +139,7 @@ function createSimpleSelectUI(text, options, svgNode, attr) {
     select.onchange = function() {
         svgNode.setAttribute(attr, select.value);
     };
+    return select;
 }
 
 function createCheckboxUI(text, checked) {
@@ -223,10 +224,49 @@ addShelfNode("Blur", "feGaussianBlur", [ "in" ]).onCreateNode = function(node) {
 };
 addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.setAttribute("type", "saturate");
-    node.svgNode.setAttribute("values", "0.5");
+    node.svgNode.setAttribute("values", "5");
     node.onSelect = function() {
-        createSimpleSelectUI("type", ["matrix", "saturate", "hueRotate", "luminanceToAlpha"], node.svgNode, "type");
-        createSimpleRangeUI("values", 0, 5, 0.01, node.svgNode, "values");
+        var select = createSelectUI("", ["matrix", "saturate", "hueRotate", "luminanceToAlpha"]);
+        select.value = node.svgNode.getAttribute("type");
+        var max = select.value == "saturate" ? 20 : 360;
+        var range = createSimpleRangeUI("", 0, max, 0.01, node.svgNode, "values");
+        var matrix = document.createElement("div");
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 5; j++) {
+                var entry = document.createElement("input");
+                entry.type = "text";
+                entry.size = 4;
+                entry.value = i == j ? "1" : "0";
+                entry.index = i * 5 + j;
+                entry.onchange = function() {
+                    var number = node.svgNode.values.baseVal.getItem(this.index);
+                    number.value = parseFloat(this.value);
+                }
+                matrix.appendChild(entry);
+            }
+            matrix.appendChild(document.createElement("br"));
+        }
+        select.onchange = function() {
+            node.svgNode.setAttribute("type", select.value);
+            if (select.value == "matrix") {
+                if (range.parentNode == form) form.removeChild(range);
+                // FIXME:  get these from form
+                node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0");
+                form.appendChild(matrix);
+            } else if (select.value == "saturate") {
+                range.max = 20;
+                form.appendChild(range);
+                if (matrix.parentNode == form) form.removeChild(matrix);
+            } else if (select.value == "hueRotate") {
+                range.max = 360;
+                form.appendChild(range);
+                if (matrix.parentNode == form) form.removeChild(matrix);
+            } else if (select.value == "luminanceToAlpha") {
+                form.removeChild(range);
+                if (matrix.parentNode == form) form.removeChild(matrix);
+            }
+            range.value = Math.max(range.value, range.max);
+        };
     }
 }
 addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]).onCreateNode = function(node) {
