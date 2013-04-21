@@ -11,6 +11,7 @@
   </defs>
 </svg>
 <img src="IMG_0854_SMALL.JPG" style="-webkit-filter: url(#f1); filter: url(#f1); position: absolute; -webkit-transform: translateZ(0);"></img>
+64,69c61,68
 <canvas width="600" height="800" id="schemCanvas" style="position: absolute; right: 0px;"></canvas>
 <form id="form" style="position: absolute; bottom: 0px;"></form>
 <script src="schematic.js" type="text/javascript"></script>
@@ -58,14 +59,12 @@ canvas.addEventListener('touchend', function(event) {
   schematic.onMouseUp(lastTouch.pageX - canvas.offsetLeft,
                       lastTouch.pageY - canvas.offsetTop);
 });
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-          };
-})();
+window.requestAnimFrame = window.requestAnimationFrame       ||
+                          window.webkitRequestAnimationFrame ||
+                          window.mozRequestAnimationFrame    ||
+                          function (callback) {
+                              window.setTimeout(callback, 1000 / 60);
+                          };
 schematic.onInvalidate = function() {
     requestAnimFrame(function() {
         ctx.fillStyle = "black";
@@ -105,6 +104,7 @@ function createSimpleRangeUI(text, min, max, step, svgNode, attr) {
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
     };
+    return input;
 }
 
 function createSimpleColorPickerUI(text, svgNode, attr) {
@@ -113,6 +113,7 @@ function createSimpleColorPickerUI(text, svgNode, attr) {
     input.onchange = function() {
         svgNode.setAttribute(attr, input.value);
     };
+    return input;
 }
 
 function createSelectUI(text, options) {
@@ -136,6 +137,7 @@ function createSimpleSelectUI(text, options, svgNode, attr) {
     select.onchange = function() {
         svgNode.setAttribute(attr, select.value);
     };
+    return select;
 }
 
 function createCheckboxUI(text, checked) {
@@ -178,9 +180,9 @@ schematic.onCreateNode = function(node, shelfNode) {
     f1.insertBefore(node.svgNode, f1.firstChild);
 };
 
-schematic.onSelect = function(node) {
+schematic.onFocus = function(node) {
     while (form.hasChildNodes()) form.removeChild(form.lastChild);
-    if (node && node.onSelect) node.onSelect();
+    if (node && node.onFocus) node.onFocus();
 };
 
 schematic.onLink = function(output, input) {
@@ -206,26 +208,45 @@ function addShelfNode(id, svgNodeName, inputs) {
 
 addShelfNode("Blend", "feBlend", [ "in", "in2" ]).onCreateNode = function(node) {
     node.svgNode.setAttribute("mode", "normal");
-    node.onSelect = function() {
+    node.onFocus = function() {
         createSimpleSelectUI("mode", ["normal", "multiply", "screen", "darken", "lighten"], node.svgNode, "mode");
     };
 };
 addShelfNode("Blur", "feGaussianBlur", [ "in" ]).onCreateNode = function(node) {
   node.svgNode.stdDeviationX.baseVal = 10;
   node.svgNode.stdDeviationY.baseVal = 10;
-  node.onSelect = function() {
+  node.onFocus = function() {
     createRangePairUI("X blur", "Y blur", 0, 100, 1,
       node.svgNode.stdDeviationX, node.svgNode.stdDeviationY);
   };
 };
+
+/*
 addShelfNode("ColorMatrix", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
-    node.svgNode.setAttribute("type", "saturate");
-    node.svgNode.setAttribute("values", "5");
-    node.onSelect = function() {
-        createSimpleSelectUI("type", ["matrix", "saturate", "hueRotate", "luminanceToAlpha"], node.svgNode, "type");
-        createSimpleRangeUI("values", 0, 10, 0.01, node.svgNode, "values");
+    node.svgNode.setAttribute("type", "matrix");
+    node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0");
+    node.onFocus = function() {
+        var matrix = document.createElement("div");
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 5; j++) {
+                var entry = document.createElement("input");
+                entry.type = "text";
+                entry.size = 4;
+                entry.index = i * 5 + j;
+                entry.value = node.svgNode.values.baseVal.getItem(entry.index).value;
+                entry.onchange = function() {
+                    var number = node.svgNode.values.baseVal.getItem(this.index);
+                    number.value = parseFloat(this.value);
+                }
+                matrix.appendChild(entry);
+            }
+            matrix.appendChild(document.createElement("br"));
+        }
+        form.appendChild(matrix);
     }
 }
+*/
+
 addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]).onCreateNode = function(node) {
   function initComponent(id) {
     var func = document.createElementNS(svgns, "feFunc" + id);
@@ -240,15 +261,15 @@ addShelfNode("ComponentTransfer", "feComponentTransfer", [ "in" ]).onCreateNode 
 };
 addShelfNode("Composite", "feComposite", [ "in", "in2" ]).onCreateNode = function(node) {
     node.svgNode.setAttribute("operator", "over");
-    node.onSelect = function() {
+    node.onFocus = function() {
         createSimpleSelectUI("operator", ["over", "in", "out", "atop", "xor", "arithmetic"], node.svgNode, "operator");
     };
 };
-addShelfNode("ConvolveMatrix", "feConvolveMatrix", [ "in"] ).onCreateNode = function(node) {
+addShelfNode("Convolve", "feConvolveMatrix", [ "in" ] ).onCreateNode = function(node) {
     node.svgNode.orderX.baseVal = node.svgNode.orderY.baseVal = 3;
     node.svgNode.setAttribute("kernelMatrix", "1 -1 1  -1 -0.01 -1  1 -1 1");
     node.svgNode.preset = "edge_outline";
-    node.onSelect = function() {
+    node.onFocus = function() {
         var presets = {
                         edge_outline: "1 -1  1  -1 -0.01 -1  1 -1 1",
                         sharpen:      "0 -1  0  -1  5 -1  0 -1  0",
@@ -273,17 +294,24 @@ addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]).onCreateNo
 addShelfNode("Flood", "feFlood", []).onCreateNode = function(node) {
     node.svgNode.setAttribute("flood-color", "#FF0000");
     node.svgNode.setAttribute("flood-opacity", "0.5");
-    node.onSelect = function() {
+    node.onFocus = function() {
         createSimpleRangeUI("Opacity", 0, 1, 0.01, node.svgNode, "flood-opacity");
         createSimpleColorPickerUI("Color", node.svgNode, "flood-color");
     };
 };
+addShelfNode("HueRotate", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
+    node.svgNode.setAttribute("type", "hueRotate");
+    node.svgNode.setAttribute("values", "180");
+    node.onFocus = function() {
+        createSimpleRangeUI("rotation", 0, 360, 0.1, node.svgNode, "values");
+    }
+}
 addShelfNode("Image", "feImage", []);
 addShelfNode("Merge", "feMerge", []);
 addShelfNode("Morphology", "feMorphology", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.radiusX.baseVal = node.svgNode.radiusY.baseVal = 5;
     node.svgNode.setAttribute("operator", "dilate");
-    node.onSelect = function() {
+    node.onFocus = function() {
         createRangePairUI("X radius", "Y radius", 0, 50, 1,
             node.svgNode.radiusX, node.svgNode.radiusY);
         createSimpleSelectUI("operator", ["dilate", "erode"], node.svgNode, "operator");
@@ -291,7 +319,7 @@ addShelfNode("Morphology", "feMorphology", [ "in" ]).onCreateNode = function(nod
 };
 addShelfNode("Offset", "feOffset", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.dx.baseVal = node.svgNode.dy.baseVal = 200; 
-    node.onSelect = function() {
+    node.onFocus = function() {
         createRangePairUI("X offset", "Y offset", 0, 1000, 1,
             node.svgNode.dx, node.svgNode.dy);
     };
@@ -299,12 +327,19 @@ addShelfNode("Offset", "feOffset", [ "in" ]).onCreateNode = function(node) {
 addShelfNode("Opacity", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
     node.svgNode.type="matrix";
     node.svgNode.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0");
-    node.onSelect = function() {
+    node.onFocus = function() {
         var value = node.svgNode.values.baseVal.getItem(18).value;
         var input = createRangeUI("Opacity", 0, 1, value, 0.01);
         input.onchange = function(value) {
             node.svgNode.setAttribute("values", "1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 " + input.value + " 0");
         };
+    };
+};
+addShelfNode("Saturate", "feColorMatrix", [ "in" ]).onCreateNode = function(node) {
+    node.svgNode.setAttribute("type", "saturate");
+    node.svgNode.setAttribute("values", "5");
+    node.onFocus = function() {
+        createSimpleRangeUI("saturation", 0, 20, 0.01, node.svgNode, "values");
     };
 };
 addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
