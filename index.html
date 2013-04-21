@@ -291,9 +291,14 @@ addShelfNode("Convolve", "feConvolveMatrix", [ "in" ] ).onCreateNode = function(
 }
 addShelfNode("DiffuseLighting", "feDiffuseLighting", [ "in" ]);
 addShelfNode("DisplacementMap", "feDisplacementMap", [ "in", "in2" ]).onCreateNode = function(node) {
-  node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
-  node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
-  node.svgNode.scale.baseVal = 50;
+    node.svgNode.xChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_R;
+    node.svgNode.yChannelSelector.baseVal = SVGFEDisplacementMapElement.SVG_CHANNEL_G;
+    node.svgNode.scale.baseVal = 50;
+    node.onFocus = function() {
+        createSimpleRangeUI("scale", 0, 200, 0.01, node.svgNode, "scale");
+        createSimpleSelectUI("X Channel", ["R", "G", "B", "A"], node.svgNode, "xChannelSelector");
+        createSimpleSelectUI("Y Channel", ["R", "G", "B", "A"], node.svgNode, "yChannelSelector");
+    };
 };
 addShelfNode("Flood", "feFlood", []).onCreateNode = function(node) {
     node.svgNode.setAttribute("flood-color", "#FF0000");
