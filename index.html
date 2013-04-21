@@ -273,13 +273,15 @@ addShelfNode("Convolve", "feConvolveMatrix", [ "in" ] ).onCreateNode = function(
     node.svgNode.preset = "edge_outline";
     node.onFocus = function() {
         var presets = {
-                        edge_outline: "1 -1  1  -1 -0.01 -1  1 -1 1",
-                        sharpen:      "0 -1  0  -1  5 -1  0 -1  0",
-                        edge_detect:  "0  1  0   1 -4  1  0  1  0",
-                        edge_enhance: "0  0  0  -1  1  0  0  0  0",
-                        emboss:       "-2 -1  0  -1  1  1  0  1  2",
+                        edge_outline:    "1 -1  1  -1 -0.01 -1  1 -1  1",
+                        sharpen:         "0 -1  0  -1  5    -1  0 -1  0",
+                        edge_detect:     "0  1  0   1 -3.99  1  0  1  0",
+                        horiz_edges:     "0  0  0  -1  0.99  0  0  0  0",
+                        vert_edges:      "0 -1  0   0  0.99  0  0  0  0",
+                        emboss:         "-2 -1  0  -1  1     1  0  1  2",
+                        xray:            "0 -1  0  -1  1.98  0  0  0  0",
                       };
-        var ui = createSelectUI("preset", ["edge_outline", "sharpen", "edge_detect", "edge_enhance", "emboss"], node.svgNode, "operator");
+        var ui = createSelectUI("preset", ["edge_outline", "sharpen", "edge_detect", "horiz_edges", "vert_edges",  "emboss", "xray"], node.svgNode, "operator");
         ui.value = node.svgNode.preset;
         ui.onchange = function() {
             node.svgNode.setAttribute("kernelMatrix", presets[ui.value]);
