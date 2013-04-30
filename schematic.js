@@ -29,7 +29,7 @@ function HoverManipulator(schematic) {
             this.schematic.currentManipulator = this.currentItem.onBeginDrag(this.schematic);
             this.schematic.currentManipulator.onMouseDown(x, y);
         }
-        this.schematic.focus(this.currentItem);
+        this.schematic.setFocus(this.currentItem);
     }
     this.onMouseUp = function(x, y) {
     }
@@ -90,7 +90,7 @@ function CreateAndDragManipulator(schematic, shelfNode) {
             var dropInput = this.target ? this.target.getDropInput() : null;
             if (dropInput) {
                 if (schematic.onCreateNode) schematic.onCreateNode(this.node, this.shelfNode);
-                this.schematic.focus(this.node);
+                this.schematic.setFocus(this.node);
                 if (dropInput.source && this.node.inputs.length > 0) {
                     this.schematic.link(dropInput.source, this.node.inputs[0]);
                 }
@@ -299,8 +299,11 @@ function Link(source, destination) {
         ctx.stroke();
     }
     this.pick = function(ctx, x, y) {
+        ctx.lineWidth = 12;
         this.drawPath(ctx);
-        return ctx.isPointInPath(x, y) ? this : null;
+        var picked = ctx.isPointInStroke(x, y) ? this : null;
+        ctx.lineWidth = 1;
+        return picked;
     }
     this.getDropInput = function() {
         return this.destination;
@@ -403,7 +406,7 @@ function Schematic(width, height) {
         if (this.onInvalidate) this.onInvalidate();
     }
     focus = null;
-    this.focus = function(node) {
+    this.setFocus = function(node) {
         if (node == focus) return;
         focus = node;
         if (this.onFocus) this.onFocus(node);

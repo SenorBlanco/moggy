@@ -10,7 +10,7 @@
     <filter id="f1"></filter>
   </defs>
 </svg>
-<video id="video1" autoplay style="-webkit-filter: url(#f1);"></video>
+<video id="video1" autoplay style="-webkit-filter: url(#f1); filter: url(#f1);"></video>
 <canvas width="600" height="800" id="schemCanvas" style="position: fixed; right: 0px;"></canvas>
 <form id="form" style="position: fixed; bottom: 0px;"></form>
 <script>
@@ -365,7 +365,7 @@ addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
 addShelfNode("Tile", "feTile", [ "in" ]);
 addShelfNode("Turbulence", "feTurbulence", []);
 var sourceGraphic = new Node("SourceGraphic", 150, 0, "#008000", "#00C000", [], ["result"]);
-var output = new Node("Output", 50, 300, "#008000", "#00C000", ["in"], []);
+var output = new Node("Output", 150, 300, "#008000", "#00C000", ["in"], []);
 schematic.addNode(sourceGraphic);
 schematic.addNode(output);
 schematic.link(sourceGraphic.outputs[0], output.inputs[0]);
