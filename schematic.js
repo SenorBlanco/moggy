@@ -11,6 +11,7 @@ var CONNECTOR_COLOR = '#808000';
 var CONNECTOR_HIGHLIGHT_COLOR = '#FFFF00';
 var MIN_BEZIER_OFFSET = 30;
 var BEZIER_SCALE = 0.7;
+var LINK_HIGHLIGHT_WIDTH = 12;
 
 function HoverManipulator(schematic) {
     this.schematic = schematic;
@@ -296,7 +297,7 @@ function Link(source, destination) {
     this.draw = function(ctx) {
         this.drawPath(ctx);
         if (this.isHighlit) {
-            ctx.lineWidth = 12;
+            ctx.lineWidth = LINK_HIGHLIGHT_WIDTH;
             ctx.strokeStyle = CONNECTOR_COLOR;
             ctx.stroke();
         }
@@ -305,7 +306,7 @@ function Link(source, destination) {
         ctx.stroke();
     }
     this.pick = function(ctx, x, y) {
-        ctx.lineWidth = 12;
+        ctx.lineWidth = LINK_HIGHLIGHT_WIDTH;
         this.drawPath(ctx);
         var picked = ctx.isPointInStroke(x, y) ? this : null;
         ctx.lineWidth = 1;
