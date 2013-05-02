@@ -294,8 +294,14 @@ function Link(source, destination) {
         ctx.bezierCurveTo(startX, startY + offset, endX, endY - offset, endX, endY);
     }
     this.draw = function(ctx) {
-        ctx.strokeStyle = this.isHighlit ? CONNECTOR_HIGHLIGHT_COLOR : CONNECTOR_COLOR;
         this.drawPath(ctx);
+        if (this.isHighlit) {
+            ctx.lineWidth = 12;
+            ctx.strokeStyle = CONNECTOR_COLOR;
+            ctx.stroke();
+        }
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = CONNECTOR_HIGHLIGHT_COLOR;
         ctx.stroke();
     }
     this.pick = function(ctx, x, y) {
