@@ -55,6 +55,18 @@ video {
     <feFuncB type="table" tableValues="1 0"/>
   </feComponentTransfer>
 </filter>
+<filter id="jimi" color-interpolation-filters="sRGB">
+  <feColorMatrix type="hueRotate" values="275"/>
+  <feColorMatrix type="saturate" values="15"/>
+  <feDisplacementMap scale="50" xChannelSelector="R" yChannelSelector="G"/>
+</filter>
+<filter id="inverse" color-interpolation-filters="sRGB">
+  <feComponentTransfer>
+    <feFuncR type="table" tableValues="1 0"/>
+    <feFuncG type="table" tableValues="1 0"/>
+    <feFuncB type="table" tableValues="1 0"/>
+  </feComponentTransfer>
+</filter>
 <filter id="convolve" color-interpolation-filters="sRGB">
   <feConvolveMatrix order="3" kernelMatrix="1 -1  1 -1 -0.01 -1 1 -1 1" edgeMode="duplicate" result="convo"/>
 </filter>
@@ -119,7 +131,7 @@ video {
 var video = document.querySelector('video');
 var button = document.querySelector('button');
 var current = document.querySelector('button span');
-var filters = ['blur', 'morphconv', 'pointlight', 'spotlight', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement'];
+var filters = ['blur', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
