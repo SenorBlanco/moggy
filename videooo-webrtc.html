@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en-us">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" /><script type="text/javascript" async="" src="videooo_files/ga.js"></script></head><body>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" /></head><body>
 <script>
 </script>
 <style>
@@ -32,6 +32,20 @@ video {
 </video>
 <svg id="image" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <defs>
+<radialGradient id="grad1" cx="50%" cy="50%" fx="50%" fy="50%">
+  <stop offset="0%" style="stop-color:rgb(255, 255, 255); stop-opacity:1;"/>
+  <stop offset="10%" style="stop-color:rgb(0, 0, 0); stop-opacity:1;"/>
+  <stop offset="20%" style="stop-color:rgb(255, 255, 255); stop-opacity:1;"/>
+  <stop offset="30%" style="stop-color:rgb(0, 0, 0); stop-opacity:1;"/>
+  <stop offset="40%" style="stop-color:rgb(255, 255, 255); stop-opacity:1;"/>
+  <stop offset="50%" style="stop-color:rgb(0, 0, 0); stop-opacity:1;"/>
+  <stop offset="60%" style="stop-color:rgb(255, 255, 255); stop-opacity:1;"/>
+  <stop offset="70%" style="stop-color:rgb(0, 0, 0); stop-opacity:1;"/>
+  <stop offset="80%" style="stop-color:rgb(255, 255, 255); stop-opacity:1;"/>
+  <stop offset="90%" style="stop-color:rgb(0, 0, 0); stop-opacity:1;"/>
+  <stop offset="100%" style="stop-color:rgb(0,0,0); stop-opacity:1;"/>
+</radialGradient>
+<circle id="circle" cx="500" cy="300" r="500" fill="url(#grad1)"/>
 <filter id="morphology" color-interpolation-filters="sRGB">
 <feMorphology radius="5" operator="dilate"/>
 </filter>
@@ -40,6 +54,13 @@ video {
 </filter>
 <filter id="turbulence" color-interpolation-filters="sRGB">
   <feTurbulence baseFrequency=".01" type="fractalNoise" numOctaves="3" seed="23" stitchTiles="stitch"/>
+<filter id="displaceleaf" color-interpolation-filters="sRGB">
+  <feImage xlink:href="IMG_0854_SMALL.JPG" result="image"/>
+  <feDisplacementMap scale="50" xChannelSelector="G" yChannelSelector="G" in="SourceGraphic" in2="image"/>
+</filter>
+<filter id="displacewave" color-interpolation-filters="sRGB">
+  <feImage xlink:href="#circle" result="image"/>
+  <feDisplacementMap scale="40" xChannelSelector="G" yChannelSelector="G" in="SourceGraphic" in2="image"/>
 </filter>
 <filter id="blur" color-interpolation-filters="sRGB">
   <feGaussianBlur stdDeviation="10,3" result="outBlur"/>
@@ -131,7 +152,7 @@ video {
 var video = document.querySelector('video');
 var button = document.querySelector('button');
 var current = document.querySelector('button span');
-var filters = ['blur', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement'];
+var filters = ['blur', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
