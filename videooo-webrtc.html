@@ -5,11 +5,12 @@
 <script>
 </script>
 <style>
-button {
-  font-size:24px;
-}
 h1 {
   display:inline; font-size:20px; padding:0 15px;
+}
+.big {
+  font-size: 20px;
+  font-family: sans-serif;
 }
 video {
   filter:url(#myblur);
@@ -17,17 +18,9 @@ video {
   border:2px solid red;
   width: 100%;
   height: 100%;
-}
-input {
-  float:right;
-}
-video {
-  clear:right
-}
+  clear: right;
 </style>
-<button>Current filter: <span>none</span></button>
-<input type="text" />
-<br />
+<span class="big">Current filter: </span><select class="big" id="select1"></select>
 <video autoplay="true" loop="loop" id="video1" tabindex="0">
 </video>
 <svg id="image" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -150,8 +143,7 @@ video {
 </svg>
 <script>
 var video = document.querySelector('video');
-var button = document.querySelector('button');
-var current = document.querySelector('button span');
+var select = document.getElementById('select1');
 var filters = ['blur', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
@@ -189,13 +181,18 @@ video.addEventListener('loadedmetadata', function() {
     spotLight.setAttribute("y", y);
   }
 });
-var i = 0;
-button.addEventListener('click', function() {
-  current.innerHTML=filters[i];
-  video.style.filter='url(#'+filters[i]+')';
-  video.style.webkitFilter='url(#'+filters[i]+')';
-  i++;
-  if(i >= filters.length)i=0;},false);
+
+for (var i = 0; i < filters.length; ++i) {
+  var o = document.createElement("option");
+  o.innerHTML = filters[i];
+  o.value = filters[i];
+  select.appendChild(o);
+}
+select.onchange = function() {
+  video.style.filter='url(#'+select.value+')';
+  video.style.webkitFilter='url(#'+select.value+')';
+};
+select.onchange();
 </script>
 <script>
 var bluramount=0;
