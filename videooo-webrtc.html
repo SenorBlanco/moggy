@@ -59,6 +59,12 @@ video {
 <filter id="blur" color-interpolation-filters="sRGB">
   <feGaussianBlur stdDeviation="10,3" result="outBlur"/>
 </filter>
+<filter id="vaseline" color-interpolation-filters="sRGB">
+  <feColorMatrix id="Saturate1" type="saturate" values="5.35" result="Saturate1"/>
+  <feGaussianBlur id="Blur1" in="Saturate1" result="Blur1" stdDeviation="20"/>
+  <feColorMatrix id="Opacity1" values="1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 0.64 0" in="Blur1" result="Opacity1"/>
+  <feComposite id="Composite1" operator="over" in="Opacity1" in2="Saturate1"/>
+</filter>
 <filter id="morphconv" color-interpolation-filters="sRGB">
   <feMorphology operator="dilate" radius="5"/>
   <feConvolveMatrix kernelMatrix="1 -1  1  -1 -0.01 -1  1 -1  1" order="3"/>
@@ -145,7 +151,7 @@ video {
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['blur', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
+var filters = ['blur', 'vaseline', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
