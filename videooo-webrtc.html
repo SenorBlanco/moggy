@@ -15,7 +15,6 @@ h1 {
 video {
   filter:url(#myblur);
   -webkit-filter:url(#myblur);
-  border:2px solid red;
   width: 100%;
   height: 100%;
   clear: right;
@@ -39,7 +38,7 @@ video {
   <stop offset="100%" style="stop-color:rgb(0,0,0); stop-opacity:1;"/>
 </radialGradient>
 <circle id="circle" cx="500" cy="300" r="500" fill="url(#grad1)"/>
-<filter id="morphology" color-interpolation-filters="sRGB">
+<filter id="dilate" color-interpolation-filters="sRGB">
 <feMorphology radius="5" operator="dilate"/>
 </filter>
 <filter id="blurEffect" color-interpolation-filters="sRGB">
@@ -59,13 +58,13 @@ video {
 <filter id="blur" color-interpolation-filters="sRGB">
   <feGaussianBlur stdDeviation="10,3" result="outBlur"/>
 </filter>
-<filter id="vaseline" color-interpolation-filters="sRGB">
+<filter id="classic-trek" color-interpolation-filters="sRGB">
   <feColorMatrix id="Saturate1" type="saturate" values="5.35" result="Saturate1"/>
   <feGaussianBlur id="Blur1" in="Saturate1" result="Blur1" stdDeviation="20"/>
   <feColorMatrix id="Opacity1" values="1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 0.64 0" in="Blur1" result="Opacity1"/>
   <feComposite id="Composite1" operator="over" in="Opacity1" in2="Saturate1"/>
 </filter>
-<filter id="morphconv" color-interpolation-filters="sRGB">
+<filter id="edgy-squares" color-interpolation-filters="sRGB">
   <feMorphology operator="dilate" radius="5"/>
   <feConvolveMatrix kernelMatrix="1 -1  1  -1 -0.01 -1  1 -1  1" order="3"/>
 </filter>
@@ -88,10 +87,10 @@ video {
     <feFuncB type="table" tableValues="1 0"/>
   </feComponentTransfer>
 </filter>
-<filter id="convolve" color-interpolation-filters="sRGB">
+<filter id="edgy" color-interpolation-filters="sRGB">
   <feConvolveMatrix order="3" kernelMatrix="1 -1  1 -1 -0.01 -1 1 -1 1" edgeMode="duplicate" result="convo"/>
 </filter>
-<filter id="convoblur" color-interpolation-filters="sRGB">
+<filter id="edgy-blur" color-interpolation-filters="sRGB">
   <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
   <feConvolveMatrix order="3" kernelMatrix="1 -1  1 -1 -0.01 -1 1 -1 1" edgeMode="none" result="convo"/>
 </filter>
@@ -107,10 +106,10 @@ video {
   </feDiffuseLighting>
   <feBlend mode="multiply" in2="SourceGraphic"/>
 </filter>
-<filter id="blackandwhite" color-interpolation-filters="sRGB">
+<filter id="black-and-white" color-interpolation-filters="sRGB">
   <feColorMatrix values="0.3333 0.3333 0.3333 0 0                                  0.3333 0.3333 0.3333 0 0                                 0.3333 0.3333 0.3333 0 0                                 0      0      0      1 0"/>
 </filter>
-<filter id="convolve2" color-interpolation-filters="sRGB">
+<filter id="edgy2" color-interpolation-filters="sRGB">
   <feConvolveMatrix filterRes="100 100" order="3" kernelMatrix="0 -1 0   -1 4 -1   0 -1 0" preserveAlpha="true"/>
 </filter>
 <filter id="offset" x="-10%" y="-20%" height="230%" width="140%" transform="translate(90,0)" color-interpolation-filters="sRGB">
@@ -123,9 +122,6 @@ video {
 </filter>
 <filter id="myblur" color-interpolation-filters="sRGB">
   <feGaussianBlur stdDeviation="1"/>
-</filter>
-<filter id="myconvolve" color-interpolation-filters="sRGB">
-  <feConvolveMatrix filterRes="100 100" order="3" kernelMatrix="0 -1 0   -1 4 -1   0 -1 0" preserveAlpha="true"/>
 </filter>
 <filter id="displacement" x="0%" y="0%" height="100%" width="100%" color-interpolation-filters="sRGB">
   <feDisplacementMap scale="100" in2="SourceGraphic" xChannelSelector="G" yChannelSelector="R"/>
@@ -151,7 +147,7 @@ video {
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['blur', 'vaseline', 'morphconv', 'pointlight', 'spotlight', 'jimi', 'morphology', 'inverse','convolve','convoblur','offset', 'blackandwhite','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
+var filters = ['blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'dilate', 'inverse','edgy','edgy-blur','offset', 'black-and-white','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
@@ -220,21 +216,6 @@ document.addEventListener('keydown',function(e) {
   video.play();
   document.querySelector('input').value='Blur amount : '+bluramount;}
 ,false);
-</script>
-<script>
-document.addEventListener('keydown',function(e) {
-  if (e.which!==39) return;
-  function rand() {
-    return~~(Math.random()*100)-50;
-  }
-  var arr=[],i=10,str;while(--i){arr.push(rand())}
-  str=arr.join(' ');
-  video.style.filter='url(#myconvolve)';
-  video.style.webkitFilter='url(#myconvolve)';
-  document.querySelector('#myconvolve feConvolveMatrix').setAttribute('kernelMatrix',str);
-  video.play();
-  document.querySelector('input').value='convole str: '+str;
-}, false);
 </script>
 </body>
 </html>
