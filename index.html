@@ -353,7 +353,16 @@ addShelfNode("Saturate", "feColorMatrix", [ "in" ]).onCreateNode = function(node
 };
 addShelfNode("SpecularLighting", "feSpecularLighting", [ "in" ]);
 addShelfNode("Tile", "feTile", [ "in" ]);
-addShelfNode("Turbulence", "feTurbulence", []);
+addShelfNode("Turbulence", "feTurbulence", []).onCreateNode = function(node) {
+    node.svgNode.setAttribute("baseFrequency", "0.05 0.05");
+    node.svgNode.setAttribute("numOctaves", "1");
+    node.svgNode.setAttribute("type", "turbulence");
+    node.onFocus = function() {
+        createSimpleRangeUI("baseFrequency", 0, 0.2, 0.001, node.svgNode, "baseFrequency");
+        createSimpleRangeUI("numOctaves", 1, 10, 1, node.svgNode, "numOctaves");
+        createSimpleSelectUI("type", ["fractalNoise", "turbulence"], node.svgNode, "type");
+    };
+};
 var sourceGraphic = new Node("SourceGraphic", 150, 0, "#008000", "#00C000", [], ["result"]);
 var output = new Node("Output", 150, 300, "#008000", "#00C000", ["in"], []);
 schematic.addNode(sourceGraphic);

@@ -13,8 +13,6 @@ h1 {
   font-family: sans-serif;
 }
 video {
-  filter:url(#myblur);
-  -webkit-filter:url(#myblur);
   width: 100%;
   height: 100%;
   clear: right;
@@ -112,15 +110,12 @@ video {
 <filter id="edgy2" color-interpolation-filters="sRGB">
   <feConvolveMatrix filterRes="100 100" order="3" kernelMatrix="0 -1 0   -1 4 -1   0 -1 0" preserveAlpha="true"/>
 </filter>
-<filter id="myblur" color-interpolation-filters="sRGB">
-  <feGaussianBlur stdDeviation="1"/>
-</filter>
-<filter id="displacement" x="0%" y="0%" height="100%" width="100%" color-interpolation-filters="sRGB">
+<filter id="funhouse" x="0%" y="0%" height="100%" width="100%" color-interpolation-filters="sRGB">
   <feDisplacementMap scale="100" in2="SourceGraphic" xChannelSelector="G" yChannelSelector="R"/>
 </filter>
 <filter id="bluefill" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
   <feFlood flood-color="blue" result="A"/>
-  <feColorMatrix type="matrix" in="SourceGraphic" result="B" values="1   0  0  0 0                              0   1  0  0 0                               0   0  1  0 0                               1   1  1  0 0                   "/>
+  <feColorMatrix type="matrix" in="SourceGraphic" result="B" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0"/>
   <feMerge>
     <feMergeNode in="A"/>
     <feMergeNode in="B"/>
@@ -134,12 +129,16 @@ video {
     <feFuncB type="discrete" tableValues="0"/>
   </feComponentTransfer>
 </filter>
+<filter id="glassy" color-interpolation-filters="sRGB">
+  <feTurbulence id="Turbulence1" baseFrequency="0.057" numOctaves="1" type="fractalNoise" result="Turbulence1"/>
+  <feDisplacementMap id="DisplacementMap1" scale="153.39" xChannelSelector="R" yChannelSelector="G" in="SourceGraphic"/>
+</filter>
 </defs>
 </svg>
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'dilate', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','displacement', 'displaceleaf', 'displacewave'];
+var filters = ['blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'dilate', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','glassy','funhouse', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
@@ -188,26 +187,6 @@ select.onchange = function() {
   video.style.webkitFilter='url(#'+select.value+')';
 };
 select.onchange();
-</script>
-<script>
-var bluramount=0;
-document.addEventListener('keydown',function(e) {
-  if (e.which==38) {
-    bluramount+=2;
-  } else if(e.which==40) {
-    bluramount-=2;
-  } else if(e.which==32) {
-    video.play();
-    return;
-  } else {
-    return;
-  }
-  video.style.filter='url(#myblur)';
-  video.style.webkitFilter='url(#myblur)';
-  document.querySelector('#myblur feGaussianBlur').setAttribute('stdDeviation',''+bluramount);
-  video.play();
-  document.querySelector('input').value='Blur amount : '+bluramount;}
-,false);
 </script>
 </body>
 </html>
