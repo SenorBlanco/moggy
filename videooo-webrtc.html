@@ -36,7 +36,7 @@ video {
   <stop offset="100%" style="stop-color:rgb(0,0,0); stop-opacity:1;"/>
 </radialGradient>
 <circle id="circle" cx="500" cy="300" r="500" fill="url(#grad1)"/>
-<filter id="dilate" color-interpolation-filters="sRGB">
+<filter id="big-squares" color-interpolation-filters="sRGB">
 <feMorphology radius="15" operator="dilate"/>
 </filter>
 <filter id="turbulence" color-interpolation-filters="sRGB">
@@ -135,7 +135,7 @@ video {
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'dilate', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','glassy','funhouse', 'displaceleaf', 'displacewave'];
+var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'big-squares', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','glassy','funhouse', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
