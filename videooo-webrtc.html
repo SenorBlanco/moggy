@@ -39,9 +39,6 @@ video {
 <filter id="dilate" color-interpolation-filters="sRGB">
 <feMorphology radius="15" operator="dilate"/>
 </filter>
-<filter id="blurEffect" color-interpolation-filters="sRGB">
-  <feGaussianBlur stdDeviation="4"/>
-</filter>
 <filter id="turbulence" color-interpolation-filters="sRGB">
   <feTurbulence baseFrequency=".01" type="fractalNoise" numOctaves="3" seed="23" stitchTiles="stitch"/>
 </filter>
@@ -53,8 +50,8 @@ video {
   <feImage xlink:href="#circle" result="image"/>
   <feDisplacementMap scale="40" xChannelSelector="G" yChannelSelector="G" in="SourceGraphic" in2="image"/>
 </filter>
-<filter id="blur" color-interpolation-filters="sRGB">
-  <feGaussianBlur stdDeviation="10,3" result="outBlur"/>
+<filter id="X blur" color-interpolation-filters="sRGB">
+  <feGaussianBlur stdDeviation="10 0"/>
 </filter>
 <filter id="classic-trek" color-interpolation-filters="sRGB">
   <feColorMatrix id="Saturate1" type="saturate" values="5.35" result="Saturate1"/>
