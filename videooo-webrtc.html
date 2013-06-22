@@ -50,8 +50,8 @@ video {
   <feImage xlink:href="#circle" result="image"/>
   <feDisplacementMap scale="40" xChannelSelector="G" yChannelSelector="G" in="SourceGraphic" in2="image"/>
 </filter>
-<filter id="X blur" color-interpolation-filters="sRGB">
-  <feGaussianBlur stdDeviation="10 0"/>
+<filter id="x-blur" color-interpolation-filters="sRGB">
+  <feGaussianBlur stdDeviation="20 0"/>
 </filter>
 <filter id="classic-trek" color-interpolation-filters="sRGB">
   <feColorMatrix id="Saturate1" type="saturate" values="5.35" result="Saturate1"/>
@@ -135,7 +135,7 @@ video {
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'dilate', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','glassy','funhouse', 'displaceleaf', 'displacewave'];
+var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'dilate', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','glassy','funhouse', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
