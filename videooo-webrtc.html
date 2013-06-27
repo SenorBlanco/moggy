@@ -110,7 +110,7 @@ video {
 <filter id="funhouse" x="0%" y="0%" height="100%" width="100%" color-interpolation-filters="sRGB">
   <feDisplacementMap scale="100" in2="SourceGraphic" xChannelSelector="G" yChannelSelector="R"/>
 </filter>
-<filter id="bluefill" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+<filter id="tron" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
   <feFlood flood-color="blue" result="A"/>
   <feColorMatrix type="matrix" in="SourceGraphic" result="B" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0"/>
   <feMerge>
@@ -135,7 +135,7 @@ video {
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'big-squares', 'inverse','edgy','edgy-blur', 'black-and-white','noir','bluefill','glassy','funhouse', 'displaceleaf', 'displacewave'];
+var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'big-squares', 'inverse','edgy','edgy-blur', 'black-and-white','noir','tron','glassy','funhouse', 'displaceleaf', 'displacewave'];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
