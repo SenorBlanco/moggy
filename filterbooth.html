@@ -195,15 +195,22 @@ video.addEventListener('loadedmetadata', function() {
     prevX = x;
     prevY = y;
     if (mouseIsDown) {
-      xBlur.setStdDeviation(xBlur.stdDeviationX.baseVal + deltaX, xBlur.stdDeviationY.baseVal);
-      edgyBlur.setStdDeviation(edgyBlur.stdDeviationX.baseVal + deltaX, edgyBlur.stdDeviationY.baseVal + deltaX);
-      glassyDispl.scale.baseVal += deltaX;
-      var newRadius = edgySquaresMorph.radiusX.baseVal + deltaX;
-      newRadius = Math.min(Math.max(newRadius, 5), 30);
-      edgySquaresMorph.setRadius(newRadius, newRadius);
-      newRadius = bigSquaresMorph.radiusX.baseVal + deltaX;
-      newRadius = Math.min(Math.max(newRadius, 0), 30);
-      bigSquaresMorph.setRadius(newRadius, newRadius);
+      if (select.value == 'x-blur') {
+          xBlur.setStdDeviation(xBlur.stdDeviationX.baseVal + deltaX, xBlur.stdDeviationY.baseVal);
+      } else if (select.value == 'edgy-blur') {
+          edgyBlur.setStdDeviation(edgyBlur.stdDeviationX.baseVal + deltaX,
+                                   edgyBlur.stdDeviationY.baseVal + deltaX);
+      } else if (select.value == 'glassy') {
+          glassyDispl.scale.baseVal += deltaX;
+      } else if (select.value == 'edgy-squares') {
+          var newRadius = edgySquaresMorph.radiusX.baseVal + deltaX;
+          newRadius = Math.min(Math.max(newRadius, 5), 30);
+          edgySquaresMorph.setRadius(newRadius, newRadius);
+      } else if (select.value == 'big-squares') {
+          var newRadius = bigSquaresMorph.radiusX.baseVal + deltaX;
+          newRadius = Math.min(Math.max(newRadius, 0), 30);
+          bigSquaresMorph.setRadius(newRadius, newRadius);
+      }
     }
   }
 });
