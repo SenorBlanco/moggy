@@ -168,7 +168,7 @@ video.addEventListener('loadedmetadata', function() {
 
   var prevX, prevY, mouseIsDown = false;
 
-  document.onmousedown = function(event) {
+  video.onmousedown = function(event) {
     var x = event.pageX, y = event.pageY;
     if (window.devicePixelRatio) {
       x *= window.devicePixelRatio;
@@ -177,10 +177,10 @@ video.addEventListener('loadedmetadata', function() {
     mouseIsDown = true;
     prevX = x; prevY = y;
   }
-  document.onmouseup = function(event) {
+  video.onmouseup = function(event) {
     mouseIsDown = false;
   }
-  document.onmousemove = function(event) {
+  video.onmousemove = function(event) {
     var x = event.pageX, y = event.pageY;
     if (window.devicePixelRatio) {
       x *= window.devicePixelRatio;
