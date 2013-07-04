@@ -38,7 +38,7 @@ video {
 </radialGradient>
 <circle id="circle" cx="500" cy="300" r="500" fill="url(#grad1)"/>
 <filter id="big-squares" color-interpolation-filters="sRGB">
-<feMorphology radius="15" operator="dilate"/>
+  <feMorphology radius="15" operator="dilate" id="BigSquaresMorph"/>
 </filter>
 <filter id="turbulence" color-interpolation-filters="sRGB">
   <feTurbulence baseFrequency=".01" type="fractalNoise" numOctaves="3" seed="23" stitchTiles="stitch"/>
@@ -52,7 +52,7 @@ video {
   <feDisplacementMap scale="40" xChannelSelector="G" yChannelSelector="G" in="SourceGraphic" in2="image"/>
 </filter>
 <filter id="x-blur" color-interpolation-filters="sRGB">
-  <feGaussianBlur stdDeviation="20 0"/>
+  <feGaussianBlur stdDeviation="20 0" id="XBlur"/>
 </filter>
 <filter id="classic-trek" color-interpolation-filters="sRGB">
   <feColorMatrix id="Saturate1" type="saturate" values="5.35" result="Saturate1"/>
@@ -61,7 +61,7 @@ video {
   <feComposite id="Composite1" operator="over" in="Opacity1" in2="Saturate1"/>
 </filter>
 <filter id="edgy-squares" color-interpolation-filters="sRGB">
-  <feMorphology operator="dilate" radius="5"/>
+  <feMorphology operator="dilate" radius="5" id="EdgySquaresMorph"/>
   <feConvolveMatrix kernelMatrix="1 -1  1  -1 -0.01 -1  1 -1  1" order="3"/>
 </filter>
 <filter id="inverse" color-interpolation-filters="sRGB">
@@ -87,7 +87,7 @@ video {
   <feConvolveMatrix order="3" kernelMatrix="1 -1  1 -1 -0.01 -1 1 -1 1" edgeMode="duplicate" result="convo"/>
 </filter>
 <filter id="edgy-blur" color-interpolation-filters="sRGB">
-  <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+  <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" id="EdgyBlur"/>
   <feConvolveMatrix order="3" kernelMatrix="1 -1  1 -1 -0.01 -1 1 -1 1" edgeMode="none" result="convo"/>
 </filter>
 <filter id="pointlight" color-interpolation-filters="sRGB">
@@ -129,7 +129,7 @@ video {
 </filter>
 <filter id="glassy" color-interpolation-filters="sRGB">
   <feTurbulence baseFrequency="0.057" numOctaves="1" type="fractalNoise"/>
-  <feDisplacementMap scale="150" xChannelSelector="R" yChannelSelector="G" in="SourceGraphic"/>
+  <feDisplacementMap scale="150" xChannelSelector="R" yChannelSelector="G" in="SourceGraphic" id="GlassyDispl"/>
 </filter>
 </defs>
 </svg>
@@ -154,13 +154,32 @@ video.addEventListener('loadedmetadata', function() {
     centerY *= window.devicePixelRatio;
   }
 
+  var xBlur = document.getElementById("XBlur");
+  var edgyBlur = document.getElementById("EdgyBlur");
+  var edgySquaresMorph = document.getElementById("EdgySquaresMorph");
+  var bigSquaresMorph = document.getElementById("BigSquaresMorph");
   var pointLight = document.getElementById("fePointLight1");
   var spotLight = document.getElementById("feSpotLight1");
+  var glassyDispl = document.getElementById("GlassyDispl");
 
   spotLight.setAttribute("pointsAtX", centerX);
   spotLight.setAttribute("pointsAtY", centerY);
   spotLight.setAttribute("pointsAtZ", 0);
 
+  var prevX, prevY, mouseIsDown = false;
+
+  document.onmousedown = function(event) {
+    var x = event.pageX, y = event.pageY;
+    if (window.devicePixelRatio) {
+      x *= window.devicePixelRatio;
+      y *= window.devicePixelRatio;
+    }
+    mouseIsDown = true;
+    prevX = x; prevY = y;
+  }
+  document.onmouseup = function(event) {
+    mouseIsDown = false;
+  }
   document.onmousemove = function(event) {
     var x = event.pageX, y = event.pageY;
     if (window.devicePixelRatio) {
@@ -171,6 +190,21 @@ video.addEventListener('loadedmetadata', function() {
     pointLight.setAttribute("y", y);
     spotLight.setAttribute("x", x);
     spotLight.setAttribute("y", y);
+    var deltaX = x - prevX;
+    var deltaY = y - prevY;
+    prevX = x;
+    prevY = y;
+    if (mouseIsDown) {
+      xBlur.setStdDeviation(xBlur.stdDeviationX.baseVal + deltaX, xBlur.stdDeviationY.baseVal);
+      edgyBlur.setStdDeviation(edgyBlur.stdDeviationX.baseVal + deltaX, edgyBlur.stdDeviationY.baseVal + deltaX);
+      glassyDispl.scale.baseVal += deltaX;
+      var newRadius = edgySquaresMorph.radiusX.baseVal + deltaX;
+      newRadius = Math.min(Math.max(newRadius, 5), 30);
+      edgySquaresMorph.setRadius(newRadius, newRadius);
+      newRadius = bigSquaresMorph.radiusX.baseVal + deltaX;
+      newRadius = Math.min(Math.max(newRadius, 0), 30);
+      bigSquaresMorph.setRadius(newRadius, newRadius);
+    }
   }
 });
 
