@@ -211,8 +211,22 @@ video.addEventListener('loadedmetadata', function() {
       }
     }
   }
+  video.addEventListener('touchmove', function(event) {
+    if (event.targetTouches.length == 1) {
+      event.preventDefault();
+      video.onmousemove(event.targetTouches[0]);
+    }
+  });
+  video.addEventListener('touchstart', function(event) {
+    if (event.targetTouches.length == 1) {
+      event.preventDefault();
+      video.onmousedown(event.targetTouches[0]);
+    }
+  });
+  video.addEventListener('touchend', function(event) {
+    video.onmouseup(event.targetTouches[0]);
+  });
 });
-
 for (var i = 0; i < filters.length; ++i) {
   var o = document.createElement("option");
   o.innerHTML = filters[i];
