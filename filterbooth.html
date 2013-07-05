@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en-us">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" /></head><body>
-<script>
-</script>
+</head>
+<body>
 <style>
-h1 {
-  display:inline; font-size:20px; padding:0 15px;
-}
 .big {
   font-size: 20px;
   font-family: sans-serif;
@@ -136,7 +132,7 @@ video {
 <script>
 var video = document.querySelector('video');
 var select = document.getElementById('select1');
-var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'big-squares', 'inverse','edgy','edgy-blur', 'black-and-white','noir','tron','glassy','funhouse', 'displaceleaf', 'displacewave'];
+var filters = ['x-blur', 'classic-trek', 'edgy-squares', 'pointlight', 'spotlight', 'jimi', 'big-squares', 'inverse','edgy','edgy-blur', 'black-and-white','noir','tron', 'funhouse', 'glassy' /*, 'displaceleaf', 'displacewave' */];
 navigator.getMedia = navigator.getUserMedia ||
                      navigator.webkitGetUserMedia ||
                      navigator.mozGetUserMedia ||
@@ -169,7 +165,8 @@ video.addEventListener('loadedmetadata', function() {
   var prevX, prevY, mouseIsDown = false;
 
   video.onmousedown = function(event) {
-    var x = event.pageX, y = event.pageY;
+    var x = event.pageX - video.offsetLeft;
+    var y = event.pageY - video.offsetTop;
     if (window.devicePixelRatio) {
       x *= window.devicePixelRatio;
       y *= window.devicePixelRatio;
@@ -181,7 +178,8 @@ video.addEventListener('loadedmetadata', function() {
     mouseIsDown = false;
   }
   video.onmousemove = function(event) {
-    var x = event.pageX, y = event.pageY;
+    var x = event.pageX - video.offsetLeft;
+    var y = event.pageY - video.offsetTop;
     if (window.devicePixelRatio) {
       x *= window.devicePixelRatio;
       y *= window.devicePixelRatio;
