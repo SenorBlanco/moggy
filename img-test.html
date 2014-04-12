@@ -1,0 +1,24 @@
+<!doctype html>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<html>
+<head>
+<title>IMG test</title>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" version="1.1" color-interpolation-filters="sRGB" id="svgDoc">
+  <defs>
+    <filter id="f1">
+      <feGaussianBlur stdDeviation="5 5"/>
+    </filter>
+  </defs>
+</svg>
+<p>SVG filter, CPU</p>
+<img src="IMG_0854_SMALL.JPG" style="-webkit-filter: url(#f1); filter: url(#f1);"></img>
+<p>SVG filter, GPU</p>
+<img src="IMG_0854_SMALL.JPG" style="-webkit-filter: url(#f1); filter: url(#f1); -webkit-transform: translateZ(0);"></img>
+<p>CSS filter, CPU</p>
+<img src="IMG_0854_SMALL.JPG" style="-webkit-filter: blur(5px); filter: blur(5px);"></img>
+<p>CSS filter, GPU</p>
+<img src="IMG_0854_SMALL.JPG" style="-webkit-filter: blur(5px); filter: blur(5px); -webkit-transform: translateZ(0);"></img>
+</body>
+</html>
