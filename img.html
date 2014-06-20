@@ -100,7 +100,7 @@ function createColorPickerUI(text, value) {
 function createSimpleRangeUI(text, min, max, step, svgNode, attr) {
     var value = svgNode.getAttribute(attr);
     var input = createRangeUI(text, min, max, value, step);
-    input.onchange = function() {
+    input.onchange = input.oninput = function() {
         svgNode.setAttribute(attr, input.value);
     };
     return input;
@@ -154,12 +154,12 @@ function createRangePairUI(xtext, ytext, min, max, step, svgX, svgY) {
     var inputX = createRangeUI(xtext, min, max, svgX.baseVal, step);
     var inputY = createRangeUI(ytext, min, max, svgY.baseVal, step);
     var locked = createCheckboxUI("Locked", true);
-    inputX.onchange = function(event) {
+    inputX.onchange = inputX.oninput = function(event) {
         if (locked.checked) inputY.value = inputX.value;
         svgX.baseVal = inputX.value;
         svgY.baseVal = inputY.value;
     };
-    inputY.onchange = function(event) {
+    inputY.onchange = inputY.oninput = function(event) {
         if (locked.checked) inputX.value = inputY.value;
         svgX.baseVal = inputX.value;
         svgY.baseVal = inputY.value;
@@ -336,7 +336,7 @@ addShelfNode("Opacity", "feColorMatrix", [ "in" ]).onCreateNode = function(node)
     node.onFocus = function() {
         var value = node.svgNode.values.baseVal.getItem(18).value;
         var input = createRangeUI("Opacity", 0, 1, value, 0.01);
-        input.onchange = function(value) {
+        input.onchange = input.oninput = function(value) {
             node.svgNode.setAttribute("values", "1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 " + input.value + " 0");
         };
     };
