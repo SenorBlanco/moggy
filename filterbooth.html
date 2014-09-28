@@ -145,10 +145,6 @@ if (navigator.getMedia) {
 video.addEventListener('loadedmetadata', function() {
   var centerX = video.videoWidth / 2;
   var centerY = video.videoHeight / 2;
-  if (window.devicePixelRatio) {
-    centerX *= window.devicePixelRatio;
-    centerY *= window.devicePixelRatio;
-  }
 
   var xBlur = document.getElementById("XBlur");
   var edgyBlur = document.getElementById("EdgyBlur");
@@ -167,10 +163,6 @@ video.addEventListener('loadedmetadata', function() {
   video.onmousedown = function(event) {
     var x = event.pageX - video.offsetLeft;
     var y = event.pageY - video.offsetTop;
-    if (window.devicePixelRatio) {
-      x *= window.devicePixelRatio;
-      y *= window.devicePixelRatio;
-    }
     mouseIsDown = true;
     prevX = x; prevY = y;
   }
@@ -180,10 +172,6 @@ video.addEventListener('loadedmetadata', function() {
   video.onmousemove = function(event) {
     var x = event.pageX - video.offsetLeft;
     var y = event.pageY - video.offsetTop;
-    if (window.devicePixelRatio) {
-      x *= window.devicePixelRatio;
-      y *= window.devicePixelRatio;
-    }
     pointLight.setAttribute("x", x);
     pointLight.setAttribute("y", y);
     spotLight.setAttribute("x", x);
