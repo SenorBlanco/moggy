@@ -191,13 +191,11 @@ video.addEventListener('loadedmetadata', function() {
       } else if (select.value == 'edgy-squares') {
           var newRadius = edgySquaresMorph.radiusX.baseVal + deltaX;
           newRadius = Math.min(Math.max(newRadius, 5), 30);
-          edgySquaresMorph.setRadiusX(newRadius);
-          edgySquaresMorph.setRadiusY(newRadius);
+          edgySquaresMorph.setAttribute("radius", newRadius);
       } else if (select.value == 'big-squares') {
           var newRadius = bigSquaresMorph.radiusX.baseVal + deltaX;
           newRadius = Math.min(Math.max(newRadius, 0), 30);
-          bigSquaresMorph.setRadiusX(newRadius);
-          bigSquaresMorph.setRadiusY(newRadius);
+          bigSquaresMorph.setAttribute("radius", newRadius);
       }
     }
   }
