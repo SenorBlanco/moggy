@@ -10,7 +10,7 @@
   font-family: sans-serif;
 }
 #source {
-  font-size: 48px;
+  font-size: 36px;
   font-family: Courier, Fixed, monospace;
   position: absolute;
   color: white;
@@ -24,10 +24,12 @@ video {
   clear: right;
 }
 </style>
-<span class="big">Current filter: </span><select class="big" id="select1"></select><span class="big"><input type="checkbox" id="showSource">Show Source</input></div>
+<span class="big">Current filter: </span>
+<select class="big" id="select1"></select>
+<span class="big"><input type="checkbox" id="showSource">Show Source</input></span>
 <video autoplay="true" loop="loop" id="video1" tabindex="0">
 </video>
-<div class="big" id="source"></div>
+<pre class="big" id="source"></pre>
 <svg id="image" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <defs>
 <radialGradient id="grad1" cx="50%" cy="50%" fx="50%" fy="50%">
@@ -63,8 +65,12 @@ video {
 </filter>
 <filter id="classic-trek" color-interpolation-filters="sRGB">
   <feColorMatrix id="Saturate1" type="saturate" values="5.35" result="Saturate1"/>
-  <feGaussianBlur id="Blur1" in="Saturate1" result="Blur1" stdDeviation="20"/>
-  <feColorMatrix id="Opacity1" values="1 0 0 0 0,  0 1 0 0 0,  0 0 1 0 0,  0 0 0 0.64 0" in="Blur1" result="Opacity1"/>
+  <feGaussianBlur id="Blur1" in="Saturate1" result="Blur1"
+                  stdDeviation="20"/>
+  <feColorMatrix id="Opacity1" values="1 0 0 0 0,
+                                       0 1 0 0 0,
+                                       0 0 1 0 0,
+                                       0 0 0 0.64 0" in="Blur1" result="Opacity1"/>
   <feComposite id="Composite1" operator="over" in="Opacity1" in2="Saturate1"/>
 </filter>
 <filter id="edgy-squares" color-interpolation-filters="sRGB">
@@ -105,12 +111,16 @@ video {
 </filter>
 <filter id="spotlight" color-interpolation-filters="sRGB">
   <feDiffuseLighting surfaceScale="1" diffuseConstant="1">
-    <feSpotLight x="0" y="0" z="100" specularExponent="1" limitingConeAngle="30" id="feSpotLight1"/>
+    <feSpotLight x="0" y="0" z="100" specularExponent="1" limitingConeAngle="30
+                 " id="feSpotLight1"/>
   </feDiffuseLighting>
   <feBlend mode="multiply" in2="SourceGraphic"/>
 </filter>
 <filter id="black-and-white" color-interpolation-filters="sRGB">
-  <feColorMatrix values="0.3333 0.3333 0.3333 0 0                                  0.3333 0.3333 0.3333 0 0                                 0.3333 0.3333 0.3333 0 0                                 0      0      0      1 0"/>
+  <feColorMatrix values="0.3333 0.3333 0.3333 0 0,
+                         0.3333 0.3333 0.3333 0 0,
+                         0.3333 0.3333 0.3333 0 0,
+                         0 0 0 1 0"/>
 </filter>
 <filter id="edgy2" color-interpolation-filters="sRGB">
   <feConvolveMatrix filterRes="100 100" order="3" kernelMatrix="0 -1 0   -1 4 -1   0 -1 0" preserveAlpha="true"/>
@@ -120,7 +130,11 @@ video {
 </filter>
 <filter id="tron" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
   <feFlood flood-color="blue" result="A"/>
-  <feColorMatrix type="matrix" in="SourceGraphic" result="B" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0"/>
+  <feColorMatrix type="matrix" in="SourceGraphic" result="B"
+      values="1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              1 1 1 0 0"/>
   <feMerge>
     <feMergeNode in="A"/>
     <feMergeNode in="B"/>
@@ -154,8 +168,8 @@ if (navigator.getMedia) {
     }, function(e) { console.log(e); });
 }
 video.addEventListener('loadedmetadata', function() {
-  var centerX = video.videoWidth / 2;
-  var centerY = video.videoHeight / 2;
+  var centerX = document.body.clientWidth / 2;
+  var centerY = document.body.clientHeight / 2;
 
   var xBlur = document.getElementById("XBlur");
   var edgyBlur = document.getElementById("EdgyBlur");
@@ -208,8 +222,8 @@ video.addEventListener('loadedmetadata', function() {
           newRadius = Math.min(Math.max(newRadius, 0), 30);
           bigSquaresMorph.setAttribute("radius", newRadius);
       }
-      updateSource();
     }
+    updateSource();
   }
   video.addEventListener('touchmove', function(event) {
     if (event.targetTouches.length == 1) {
