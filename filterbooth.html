@@ -164,7 +164,7 @@ navigator.getMedia = navigator.getUserMedia ||
                      navigator.msGetUserMedia;
 if (navigator.getMedia) {
     navigator.getMedia({video: true}, function(localMediaStream) {
-        video.src = window.URL.createObjectURL(localMediaStream);
+        video.srcObject = localMediaStream;
     }, function(e) { console.log(e); });
 }
 video.addEventListener('loadedmetadata', function() {
